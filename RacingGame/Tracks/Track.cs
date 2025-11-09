@@ -203,9 +203,7 @@ namespace RacingGame.Tracks
 		public Track(string setTrackName, Landscape landscape)
 			: base(TrackData.Load(setTrackName), landscape)
 		{
-			var storedScene = BaseGame.Content.LoadStoredScene($"Scenes/{setTrackName}.scene");
-
-			_scene = storedScene.Root;
+			_scene = ModelUtils.LoadScene(setTrackName);
 
 			GenerateVerticesAndObjects(landscape);
 		}

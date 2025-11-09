@@ -141,10 +141,9 @@ namespace RacingGame.Tracks
 		public TrackLine(Vector3[] inputPoints,
 			List<TrackData.WidthHelper> widthHelpers,
 			List<TrackData.RoadHelper> roadHelpers,
-			List<TrackData.NeutralObject> neutralObjects,
 			Landscape landscape)
 		{
-			Load(inputPoints, widthHelpers, roadHelpers, neutralObjects, landscape);
+			Load(inputPoints, widthHelpers, roadHelpers, landscape);
 		}
 
 #if DEBUG
@@ -157,7 +156,6 @@ namespace RacingGame.Tracks
 			: this(inputPoints,
 			new List<TrackData.WidthHelper>(),
 			new List<TrackData.RoadHelper>(),
-			new List<TrackData.NeutralObject>(),
 			null)
 		{
 		}
@@ -173,7 +171,6 @@ namespace RacingGame.Tracks
 			: this(inputPointsFromTrack.TrackPoints.ToArray(),
 			inputPointsFromTrack.WidthHelpers,
 			inputPointsFromTrack.RoadHelpers,
-			inputPointsFromTrack.NeutralsObjects,
 			landscape)
 		{
 		}
@@ -186,12 +183,10 @@ namespace RacingGame.Tracks
 		/// <param name="inputPoints">Input points</param>
 		/// <param name="widthHelpers">Width helpers</param>
 		/// <param name="roadHelpers">Road helpers</param>
-		/// <param name="neutralObjects">Neutral objects</param>
 		/// <param name="landscape">Landscape</param>
 		protected void Load(Vector3[] inputPoints,
 			List<TrackData.WidthHelper> widthHelpers,
 			List<TrackData.RoadHelper> roadHelpers,
-			List<TrackData.NeutralObject> neutralObjects,
 			Landscape landscape)
 		{
 			#region Kill all previously loaded data
@@ -521,8 +516,7 @@ namespace RacingGame.Tracks
 
 			GenerateUTextureCoordinates();
 
-			GenerateTunnelsAndLandscapeObjects(
-				roadHelpers, neutralObjects, landscape);
+			GenerateTunnelsAndLandscapeObjects(roadHelpers, landscape);
 		}
 
 		/// <summary>
@@ -535,7 +529,6 @@ namespace RacingGame.Tracks
 			Load(trackData.TrackPoints.ToArray(),
 				trackData.WidthHelpers,
 				trackData.RoadHelpers,
-				trackData.NeutralsObjects,
 				landscape);
 		}
 		#endregion
@@ -627,7 +620,6 @@ namespace RacingGame.Tracks
 		#region GenerateTunnelsAndLandscapeObjects
 		private void GenerateTunnelsAndLandscapeObjects(
 			List<TrackData.RoadHelper> roadHelpers,
-			List<TrackData.NeutralObject> neutralObjects,
 			Landscape landscape)
 		{
 			#region Find out where the tunnels are
@@ -675,17 +667,6 @@ namespace RacingGame.Tracks
 			if (helperStartedNum > 0)
 				helperPositions.Add(new RoadHelperPosition(
 					remType, helperStartedNum, points.Count - 3));
-			#endregion
-
-			#region Copy over neutral objects for landscape rendering
-			if (landscape != null)
-			{
-				for (int num = 0; num < neutralObjects.Count; num++)
-				{
-					TrackData.NeutralObject obj = neutralObjects[num];
-					landscape.AddObjectToRender(obj.modelName, obj.matrix);
-				}
-			}
 			#endregion
 		}
 		#endregion

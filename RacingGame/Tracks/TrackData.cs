@@ -177,10 +177,6 @@ namespace RacingGame.Tracks
 		}
 		#endregion
 
-		/// <summary>
-		/// List of neutral objects used in this level
-		/// </summary>
-		private List<NeutralObject> objects = new List<NeutralObject>();
 		#endregion
 
 		#region Properties
@@ -220,17 +216,6 @@ namespace RacingGame.Tracks
 			}
 		}
 
-		/// <summary>
-		/// Neutrals objects
-		/// </summary>
-		/// <returns>List</returns>
-		public List<NeutralObject> NeutralsObjects
-		{
-			get
-			{
-				return objects;
-			}
-		}
 		#endregion
 
 		#region Constructor
@@ -248,16 +233,13 @@ namespace RacingGame.Tracks
 		/// <param name="setTrackPoints">Set track points</param>
 		/// <param name="setWidthHelpers">Set width helpers</param>
 		/// <param name="setRoadHelpers">Set road helpers</param>
-		/// <param name="setObjects">Set objects</param>
 		public TrackData(List<Vector3> setTrackPoints,
 			List<WidthHelper> setWidthHelpers,
-			List<RoadHelper> setRoadHelpers,
-			List<NeutralObject> setObjects)
+			List<RoadHelper> setRoadHelpers)
 		{
 			trackPoints = setTrackPoints;
 			widthHelpers = setWidthHelpers;
 			roadHelpers = setRoadHelpers;
-			objects = setObjects;
 		}
 
 		/// <summary>
