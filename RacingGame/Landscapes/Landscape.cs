@@ -1088,18 +1088,24 @@ namespace RacingGame.Landscapes
 			_directLight.Direction = -BaseGame.LightDirection;
 
 			renderer.Add(_directLight);
-
 			renderer.Add(track.Scene);
+			renderer.Add(track.RoadMesh);
+			renderer.Add(track.RoadBackmesh);
+
+			if (track.RoadTunnelMesh != null)
+			{
+				renderer.Add(track.RoadTunnelMesh);
+			}
+
+			renderer.Add(track.LeftRailMesh);
+			renderer.Add(track.RightRailMesh);
+			renderer.Add(track.ColumnsMesh);
 
 			_camera.SetViewport(Nrs.GraphicsDevice.Viewport.Width, Nrs.GraphicsDevice.Viewport.Height);
 
 			_camera.View = RacingGameManager.ViewMatrix;
 
 			renderer.Process(_camera);
-
-
-			// Render track
-			track.Render();
 
 			// Render all landscape objects
 			for (int num = 0; num < landscapeObjects.Count; num++)
@@ -1134,9 +1140,6 @@ namespace RacingGame.Landscapes
 		{
 			// Don't generate shadow for the landscape, it only receives shadow!
 
-			// Just generate shadows for the road.
-			track.GenerateShadow();
-
 			// Render shadow all landscape objects that near our road
 			for (int num = 0; num < nearTrackObjects.Count; num++)
 			{
@@ -1169,9 +1172,6 @@ namespace RacingGame.Landscapes
 						nearTrackObjects[num].UseShadows();
 					}
 			}
-
-			// And the track receives shadow too
-			track.UseShadow();
 		}
 		#endregion
 

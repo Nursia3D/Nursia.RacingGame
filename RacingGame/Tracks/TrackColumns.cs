@@ -8,15 +8,20 @@
 #endregion
 
 #region Using directives
+using DigitalRiseModel;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Nursia.Materials;
+using Nursia.SceneGraph;
+using RacingGame.Graphics;
+using RacingGame.Landscapes;
+using RacingGame.Shaders;
+using RacingGame.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using RacingGame.Graphics;
 using Model = RacingGame.Graphics.Model;
-using RacingGame.Landscapes;
-using RacingGame.Shaders;
+
 #endregion
 
 namespace RacingGame.Tracks
@@ -92,19 +97,10 @@ namespace RacingGame.Tracks
 		/// Column position list.
 		/// </summary>
 		List<Vector3> columnPositions = new List<Vector3>();
-		/// <summary>
-		/// Rail vertices.
-		/// </summary>
-		TangentVertex[] columnVertices = null;
-		/// <summary>
-		/// Vertex buffer of guard rail.
-		/// </summary>
-		VertexBuffer columnVb = null;
-		/// <summary>
-		/// Index buffer orf guard rail.
-		/// </summary>
-		IndexBuffer columnIb = null;
+		
 		#endregion
+
+		public MeshNode Mesh { get; }
 
 		#region Constructor
 		/// <summary>
@@ -202,7 +198,7 @@ namespace RacingGame.Tracks
 			#endregion
 
 			#region Generate vertex buffer
-			columnVertices = new TangentVertex[
+			var columnVertices = new TangentVertex[
 				columnPositions.Count * BaseColumnVertices.Length * 2];
 
 			// Go through all columns
@@ -270,7 +266,7 @@ namespace RacingGame.Tracks
 			//    columnVertices.Length,
 			//    ResourceUsage.WriteOnly,
 			//    ResourceManagementMode.Automatic);
-			columnVb = new VertexBuffer(
+			var columnVb = new VertexBuffer(
 				BaseGame.Device,
 				typeof(TangentVertex),
 				columnVertices.Length,
@@ -319,68 +315,38 @@ namespace RacingGame.Tracks
 			//    indices.Length,
 			//    ResourceUsage.WriteOnly,
 			//    ResourceManagementMode.Automatic);
-			columnIb = new IndexBuffer(
+			var columnIb = new IndexBuffer(
 				BaseGame.Device,
 				typeof(int),
 				indices.Length,
 				BufferUsage.WriteOnly);
 			columnIb.SetData(indices);
 			#endregion
+
+			// Road cement material, used for the columns the road is staying on.
+			var material = new LitSolidMaterial
+			{
+				DiffuseColor = Material.DefaultDiffuseColor,
+				SpecularColor = Material.DefaultSpecularColor,
+				AmbientLightColor = Material.DefaultAmbientColor,
+				DiffuseTexturePath = "Textures/Leitplanke.tga",
+				NormalTexturePath = "Textures/LeitplankeNormal.tga"
+			};
+
+			var meshPart = new DrMeshPart(columnVb, columnIb, columnVertices.CalculateBoundingBox());
+
+			Mesh = new MeshNode
+			{
+				Mesh = meshPart,
+				Material = material
+			};
 		}
 		#endregion
 
 		#region Dispose
 		public void Dispose()
 		{
-			columnVb.Dispose();
-			columnIb.Dispose();
-		}
-		#endregion
-
-		#region Render
-		/// <summary>
-		/// Render
-		/// </summary>
-		public void Render(Material columnMaterial)
-		{
-			// We use tangent vertices for everything here
-
-			// Restore the world matrix
-			BaseGame.WorldMatrix = Matrix.Identity;
-
-			// Render all columns
-			ShaderEffect.normalMapping.Render(
-				columnMaterial,
-				"Specular20",
-				new BaseGame.RenderHandler(RenderColumnVertices));
-
-			/*now done in landscape object rendering
-            // And also render all the holders
-            foreach (Vector3 pos in columnHolderPositions)
-            {
-                holderModel.Render(pos);
-            }
-             */
-
-			// Restore the world matrix
-			BaseGame.WorldMatrix = Matrix.Identity;
-		}
-
-		/// <summary>
-		/// Render column vertices
-		/// </summary>
-		private void RenderColumnVertices()
-		{
-			if (columnVertices == null)
-				return;
-
-			BaseGame.Device.SetVertexBuffer(columnVb);
-			BaseGame.Device.Indices = columnIb;
-			BaseGame.Device.DrawIndexedPrimitives(
-				PrimitiveType.TriangleList,
-				0, 0, columnVertices.Length,
-				0, (BaseColumnVertices.Length - 1) *
-				columnPositions.Count * 2);
+			Mesh.Dispose();
 		}
 		#endregion
 	}

@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using RacingGame.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace RacingGame.Utilities
 {
@@ -80,6 +81,11 @@ namespace RacingGame.Utilities
 					}
 				}
 			}
+		}
+
+		public static BoundingBox CalculateBoundingBox(this IEnumerable<TangentVertex> vertices)
+		{
+			return BoundingBox.CreateFromPoints(from v in vertices select v.pos);
 		}
 	}
 }

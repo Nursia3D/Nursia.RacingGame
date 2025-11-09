@@ -22,6 +22,9 @@ using RacingGame.GameLogic;
 using Nursia.SceneGraph;
 using Nursia;
 using Nursia.SceneGraph.Cameras;
+using Nursia.Materials;
+using DigitalRiseModel;
+using RacingGame.Utilities;
 #endregion
 
 namespace RacingGame.Tracks
@@ -82,86 +85,7 @@ namespace RacingGame.Tracks
 
 		private SceneNode _scene;
 
-		/// <summary>
-		/// Road material for the top of the road.
-		/// </summary>
-		Material roadMaterial = new Material(
-			"Road.tga", "RoadNormal.tga");
-		/// <summary>
-		/// Road back material, for the other side of the road and the sides.
-		/// </summary>
-		Material roadBackMaterial = new Material(
-			"RoadBack.tga", "RoadBackNormal.tga");
-
-		/// <summary>
-		/// Road tunnel material, used whereever we got tunnels.
-		/// </summary>
-		Material roadTunnelMaterial = new Material(
-			// Use mainly ambient color (tunnel uses lightmaps)
-			new Color(182, 182, 182),
-			new Color(80, 80, 80),
-			new Color(64, 64, 64),
-			"RoadTunnel.tga", "RoadTunnelNormal.tga", "", "");
-
-		/// <summary>
-		/// Road cement material, used for the columns the road is staying on.
-		/// </summary>
-		Material roadCementMaterial = new Material(
-			"RoadCement.tga", "RoadCementNormal.tga");
-
-		/// <summary>
-		/// Guard rail material, used for the left and right guard rails.
-		/// It is also used for the guard rail 
-		/// </summary>
-		Material guardRailMaterial = new Material(
-			new Color(72, 72, 72),
-			new Color(182, 182, 182),
-			new Color(225, 225, 225),
-			"Leitplanke.tga", "LeitplankeNormal.tga", "", "");
-
-		/// <summary>
-		/// Vertices for the road itself.
-		/// </summary>
-		TangentVertex[] roadVertices = null;
-		/// <summary>
-		/// Vertex buffer for the road.
-		/// </summary>
-		VertexBuffer roadVb = null;
-		/// <summary>
-		/// Index buffer for the road.
-		/// </summary>
-		IndexBuffer roadIb = null;
-
-		/// <summary>
-		/// Vertices for the road back (hull, bottom side, sides).
-		/// </summary>
-		TangentVertex[] roadBackVertices = null;
-		/// <summary>
-		/// Vertex buffer for the road back (has different texture coordinates)
-		/// </summary>
-		VertexBuffer roadBackVb = null;
-		/// <summary>
-		/// Index buffer for the road back.
-		/// </summary>
-		IndexBuffer roadBackIb = null;
-
-		/// <summary>
-		/// Vertices for the road tunnels (sides and top).
-		/// </summary>
-		TangentVertex[] roadTunnelVertices = null;
-		/// <summary>
-		/// Remember road tunnel indices because determinating the count is
-		/// not so easy (we can have multiple tunnels in here).
-		/// </summary>
-		int[] roadTunnelIndices = null;
-		/// <summary>
-		/// Vertex buffer for the road back (has different texture coordinates)
-		/// </summary>
-		VertexBuffer roadTunnelVb = null;
-		/// <summary>
-		/// Index buffer for the road back.
-		/// </summary>
-		IndexBuffer roadTunnelIb = null;
+		private MeshNode _roadMesh, _roadBackMesh, _roadTunnelMesh;
 
 		/// <summary>
 		/// Left and right guard rails.
@@ -189,6 +113,14 @@ namespace RacingGame.Tracks
 		#region Properties
 
 		public SceneNode Scene => _scene;
+
+		public MeshNode RoadMesh => _roadMesh;
+		public MeshNode RoadBackmesh => _roadBackMesh;
+		public MeshNode RoadTunnelMesh => _roadTunnelMesh;
+
+		public MeshNode LeftRailMesh => leftRail.Mesh;
+		public MeshNode RightRailMesh => rightRail.Mesh;
+		public MeshNode ColumnsMesh => columns.Mesh;
 
 		/// <summary>
 		/// Start position
@@ -295,12 +227,9 @@ namespace RacingGame.Tracks
 		#endregion
 
 		#region GenerateVerticesAndObjects
-		/// <summary>
-		/// Generate vertices and objects
-		/// </summary>
-		private void GenerateVerticesAndObjects(Landscape landscape)
+
+		private MeshNode CreateRoadMesh()
 		{
-			#region Generate the road vertices
 			// Each road segment gets 5 points:
 			// left, left middle, middle, right middle, right.
 			// The reason for this is that we would bad triangle errors if the
@@ -314,7 +243,7 @@ namespace RacingGame.Tracks
 			// The last point is duplicated (see TrackLine) because we have 2 sets
 			// of texture coordinates for it (begin block, end block).
 			// So for the index buffer we only use points.Count-1 blocks.
-			roadVertices = new TangentVertex[points.Count * 5];
+			var roadVertices = new TangentVertex[points.Count * 5];
 
 			// Current texture coordinate for the roadway (in direction of movement)
 			for (int num = 0; num < points.Count; num++)
@@ -336,7 +265,7 @@ namespace RacingGame.Tracks
 			//    roadVertices.Length,
 			//    ResourceUsage.WriteOnly,
 			//    ResourceManagementMode.Automatic);
-			roadVb = new VertexBuffer(
+			var roadVb = new VertexBuffer(
 				BaseGame.Device,
 				typeof(TangentVertex),
 				roadVertices.Length,
@@ -385,17 +314,37 @@ namespace RacingGame.Tracks
 			//    indices.Length,
 			//    ResourceUsage.WriteOnly,
 			//    ResourceManagementMode.Automatic);
-			roadIb = new IndexBuffer(
+			var roadIb = new IndexBuffer(
 				BaseGame.Device,
 				typeof(int),
 				indices.Length,
 				BufferUsage.WriteOnly);
 			roadIb.SetData(indices);
-			#endregion
 
-			#region Generate the road back vertices
+			var material = new LitSolidMaterial
+			{
+				DiffuseColor = Material.DefaultDiffuseColor,
+				SpecularColor = Material.DefaultSpecularColor,
+				AmbientLightColor = Material.DefaultAmbientColor,
+				DiffuseTexturePath = "Textures/Road.tga",
+				NormalTexturePath = "Textures/RoadNormal.tga",
+			};
+
+			material.Load(BaseGame.Content);
+
+			var meshPart = new DrMeshPart(roadVb, roadIb, roadVertices.CalculateBoundingBox());
+
+			return new MeshNode
+			{
+				Mesh = meshPart,
+				Material = material
+			};
+		}
+
+		private MeshNode CreateRoadBackMesh()
+		{
 			// We need 4 vertices per cross-section edge of the road back hull
-			roadBackVertices = new TangentVertex[points.Count * 4];
+			var roadBackVertices = new TangentVertex[points.Count * 4];
 			for (int num = 0; num < points.Count; num++)
 			{
 				// Left side of the road
@@ -435,7 +384,7 @@ namespace RacingGame.Tracks
 			//    roadBackVertices.Length,
 			//    ResourceUsage.WriteOnly,
 			//    ResourceManagementMode.Automatic);
-			roadBackVb = new VertexBuffer(
+			var roadBackVb = new VertexBuffer(
 				BaseGame.Device,
 				typeof(TangentVertex),
 				roadBackVertices.Length,
@@ -446,7 +395,7 @@ namespace RacingGame.Tracks
 			// 3 vertices each. We got 1 segment less than points because the
 			// last point is duplicated (different tex coords).
 			int[] backIndices = new int[(points.Count - 1) * 6 * 3];
-			vertexIndex = 0;
+			var vertexIndex = 0;
 			for (int num = 0; num < points.Count - 1; num++)
 			{
 				// We only use 4 vertices (and the next 4 vertices),
@@ -484,15 +433,35 @@ namespace RacingGame.Tracks
 			//    backIndices.Length,
 			//    ResourceUsage.WriteOnly,
 			//    ResourceManagementMode.Automatic);
-			roadBackIb = new IndexBuffer(
+			var roadBackIb = new IndexBuffer(
 				BaseGame.Device,
 				typeof(int),
 				backIndices.Length,
 				BufferUsage.WriteOnly);
 			roadBackIb.SetData(backIndices);
-			#endregion
 
-			#region Generate the road tunnel vertices
+			var material = new LitSolidMaterial
+			{
+				DiffuseColor = Material.DefaultDiffuseColor,
+				SpecularColor = Material.DefaultSpecularColor,
+				AmbientLightColor = Material.DefaultAmbientColor,
+				DiffuseTexturePath = "Textures/RoadBack.tga",
+				NormalTexturePath = "Textures/RoadBackNormal.tga",
+			};
+
+			material.Load(BaseGame.Content);
+
+			var meshPart = new DrMeshPart(roadBackVb, roadBackIb, roadBackVertices.CalculateBoundingBox());
+
+			return new MeshNode
+			{
+				Mesh = meshPart,
+				Material = material
+			};
+		}
+
+		private MeshNode CreateRoadTunnelMesh()
+		{
 			// Only generate tunnels for the parts were we want to have tunnels for.
 			int totalTunnelLength = 0;
 			foreach (RoadHelperPosition tunnelPos in helperPositions)
@@ -501,142 +470,170 @@ namespace RacingGame.Tracks
 
 			// Lets use 4 vertices per segment, we could improve that later
 			// by adding more vertices for a round tunnel.
-			roadTunnelVertices = new TangentVertex[totalTunnelLength * 4];
-			vertexIndex = 0;
+			var roadTunnelVertices = new TangentVertex[totalTunnelLength * 4];
+			var vertexIndex = 0;
+			foreach (RoadHelperPosition tunnelPos in helperPositions)
+			{
+				if (tunnelPos.type != TrackData.RoadHelper.HelperType.Tunnel)
+				{
+					continue;
+				}
+
+				for (int num = tunnelPos.startNum; num <= tunnelPos.endNum; num++)
+				{
+					// Left side of the road
+					roadTunnelVertices[vertexIndex + 0] =
+						points[num].LeftTangentVertex;
+					roadTunnelVertices[vertexIndex + 0].uv = new Vector2(
+						roadTunnelVertices[vertexIndex + 0].U
+						* RoadTunnelTextureWidthFactor, 0.0f);
+
+					// Left top side of the road
+					roadTunnelVertices[vertexIndex + 1] =
+						points[num].TunnelTopLeftSideTangentVertex;
+					roadTunnelVertices[vertexIndex + 1].uv = new Vector2(
+						roadTunnelVertices[vertexIndex + 1].U *
+						RoadTunnelTextureWidthFactor, RoadTunnelSideTextureHeight);
+
+					// Right top side of the road
+					roadTunnelVertices[vertexIndex + 2] =
+						points[num].TunnelTopRightSideTangentVertex;
+					roadTunnelVertices[vertexIndex + 2].uv = new Vector2(
+						roadTunnelVertices[vertexIndex + 2].U *
+						RoadTunnelTextureWidthFactor,
+						1.0f - RoadTunnelSideTextureHeight);
+
+					// Right side of the road
+					roadTunnelVertices[vertexIndex + 3] =
+						points[num].RightTangentVertex;
+					roadTunnelVertices[vertexIndex + 3].uv = new Vector2(
+						roadTunnelVertices[vertexIndex + 3].U *
+						RoadTunnelTextureWidthFactor, 1.0f);
+
+					// Adjust normals for the 2 lower points
+					roadTunnelVertices[vertexIndex + 0].normal *= -1;
+					roadTunnelVertices[vertexIndex + 3].normal *= -1;
+					roadTunnelVertices[vertexIndex + 0].tangent *= -1;
+					roadTunnelVertices[vertexIndex + 3].tangent *= -1;
+
+					vertexIndex += 4;
+				}
+			}
+
+			if (roadTunnelVertices.Length == 0)
+			{
+				return null;
+			}
+
+			var roadTunnelVb = new VertexBuffer(
+			   BaseGame.Device,
+			   typeof(TangentVertex),
+			   roadTunnelVertices.Length,
+			   BufferUsage.WriteOnly);
+			roadTunnelVb.SetData(roadTunnelVertices);
+
+			// Also calculate all indices, we have 6 polygons for each segment with
+			// 3 vertices each. We got 1 segment less than points because the
+			// last point is duplicated (different tex coords).
+			int totalIndices = 0;
 			foreach (RoadHelperPosition tunnelPos in helperPositions)
 				if (tunnelPos.type == TrackData.RoadHelper.HelperType.Tunnel)
-					for (int num = tunnelPos.startNum; num <= tunnelPos.endNum; num++)
+					totalIndices += (tunnelPos.endNum - tunnelPos.startNum);
+			var roadTunnelIndices = new int[totalIndices * 6 * 3];
+			vertexIndex = 0;
+			int tunnelIndex = 0;
+			foreach (RoadHelperPosition tunnelPos in helperPositions)
+				if (tunnelPos.type == TrackData.RoadHelper.HelperType.Tunnel)
+				{
+					for (int num = tunnelPos.startNum; num < tunnelPos.endNum; num++)
 					{
-						// Left side of the road
-						roadTunnelVertices[vertexIndex + 0] =
-							points[num].LeftTangentVertex;
-						roadTunnelVertices[vertexIndex + 0].uv = new Vector2(
-							roadTunnelVertices[vertexIndex + 0].U
-							* RoadTunnelTextureWidthFactor, 0.0f);
-
-						// Left top side of the road
-						roadTunnelVertices[vertexIndex + 1] =
-							points[num].TunnelTopLeftSideTangentVertex;
-						roadTunnelVertices[vertexIndex + 1].uv = new Vector2(
-							roadTunnelVertices[vertexIndex + 1].U *
-							RoadTunnelTextureWidthFactor, RoadTunnelSideTextureHeight);
-
-						// Right top side of the road
-						roadTunnelVertices[vertexIndex + 2] =
-							points[num].TunnelTopRightSideTangentVertex;
-						roadTunnelVertices[vertexIndex + 2].uv = new Vector2(
-							roadTunnelVertices[vertexIndex + 2].U *
-							RoadTunnelTextureWidthFactor,
-							1.0f - RoadTunnelSideTextureHeight);
-
-						// Right side of the road
-						roadTunnelVertices[vertexIndex + 3] =
-							points[num].RightTangentVertex;
-						roadTunnelVertices[vertexIndex + 3].uv = new Vector2(
-							roadTunnelVertices[vertexIndex + 3].U *
-							RoadTunnelTextureWidthFactor, 1.0f);
-
-						// Adjust normals for the 2 lower points
-						roadTunnelVertices[vertexIndex + 0].normal *= -1;
-						roadTunnelVertices[vertexIndex + 3].normal *= -1;
-						roadTunnelVertices[vertexIndex + 0].tangent *= -1;
-						roadTunnelVertices[vertexIndex + 3].tangent *= -1;
-
-						vertexIndex += 4;
-					}
-
-			// Set road back vertex buffer
-			if (roadTunnelVertices.Length > 0)
-			{
-				// fix
-				//roadTunnelVb = new VertexBuffer(
-				//    BaseGame.Device,
-				//    typeof(TangentVertex),
-				//    roadTunnelVertices.Length,
-				//    ResourceUsage.WriteOnly,
-				//    ResourceManagementMode.Automatic);
-				roadTunnelVb = new VertexBuffer(
-				   BaseGame.Device,
-				   typeof(TangentVertex),
-				   roadTunnelVertices.Length,
-				   BufferUsage.WriteOnly);
-				roadTunnelVb.SetData(roadTunnelVertices);
-
-				// Also calculate all indices, we have 6 polygons for each segment with
-				// 3 vertices each. We got 1 segment less than points because the
-				// last point is duplicated (different tex coords).
-				int totalIndices = 0;
-				foreach (RoadHelperPosition tunnelPos in helperPositions)
-					if (tunnelPos.type == TrackData.RoadHelper.HelperType.Tunnel)
-						totalIndices += (tunnelPos.endNum - tunnelPos.startNum);
-				roadTunnelIndices = new int[totalIndices * 6 * 3];
-				vertexIndex = 0;
-				int tunnelIndex = 0;
-				foreach (RoadHelperPosition tunnelPos in helperPositions)
-					if (tunnelPos.type == TrackData.RoadHelper.HelperType.Tunnel)
-					{
-						for (int num = tunnelPos.startNum; num < tunnelPos.endNum; num++)
+						// We only use 4 vertices (and the next 4 vertices),
+						// but we have to construct all 18 indices for our 6 polygons.
+						for (int sideNum = 0; sideNum < 3; sideNum++)
 						{
-							// We only use 4 vertices (and the next 4 vertices),
-							// but we have to construct all 18 indices for our 6 polygons.
-							for (int sideNum = 0; sideNum < 3; sideNum++)
-							{
-								// Each side needs 2 polygons.
-								// Note: This polygons are rendered with culling off because
-								// we want to see the inside and outside of the tunnel.
+							// Each side needs 2 polygons.
+							// Note: This polygons are rendered with culling off because
+							// we want to see the inside and outside of the tunnel.
 
-								// 1. Polygon
-								roadTunnelIndices[tunnelIndex + 0] =
-									vertexIndex + sideNum;
-								roadTunnelIndices[tunnelIndex + 2] =
-									vertexIndex + 4 + sideNum;
-								roadTunnelIndices[tunnelIndex + 1] =
-									vertexIndex + 5 + sideNum;
+							// 1. Polygon
+							roadTunnelIndices[tunnelIndex + 0] =
+								vertexIndex + sideNum;
+							roadTunnelIndices[tunnelIndex + 2] =
+								vertexIndex + 4 + sideNum;
+							roadTunnelIndices[tunnelIndex + 1] =
+								vertexIndex + 5 + sideNum;
 
-								// 2. Polygon
-								roadTunnelIndices[tunnelIndex + 3] =
-									vertexIndex + 5 + sideNum;
-								roadTunnelIndices[tunnelIndex + 5] =
-									vertexIndex + 1 + sideNum;
-								roadTunnelIndices[tunnelIndex + 4] =
-									vertexIndex + sideNum;
+							// 2. Polygon
+							roadTunnelIndices[tunnelIndex + 3] =
+								vertexIndex + 5 + sideNum;
+							roadTunnelIndices[tunnelIndex + 5] =
+								vertexIndex + 1 + sideNum;
+							roadTunnelIndices[tunnelIndex + 4] =
+								vertexIndex + sideNum;
 
-								tunnelIndex += 6;
-							}
-
-							// Go to the next 4 vertices
-							vertexIndex += 4;
+							tunnelIndex += 6;
 						}
 
-						// Skip 4 vertices till the next tunnel
+						// Go to the next 4 vertices
 						vertexIndex += 4;
 					}
 
-				// Set road back index buffer
-				// fix
-				//roadTunnelIb = new IndexBuffer(
-				//    BaseGame.Device,
-				//    typeof(int),
-				//    roadTunnelIndices.Length,
-				//    ResourceUsage.WriteOnly,
-				//    ResourceManagementMode.Automatic);
-				roadTunnelIb = new IndexBuffer(
-					BaseGame.Device,
-					typeof(int),
-					roadTunnelIndices.Length,
-					BufferUsage.WriteOnly);
-				roadTunnelIb.SetData(roadTunnelIndices);
-			}
-			#endregion
+					// Skip 4 vertices till the next tunnel
+					vertexIndex += 4;
+				}
 
-			#region Generate guard rails
+			// Set road back index buffer
+			var roadTunnelIb = new IndexBuffer(
+				BaseGame.Device,
+				typeof(int),
+				roadTunnelIndices.Length,
+				BufferUsage.WriteOnly);
+			roadTunnelIb.SetData(roadTunnelIndices);
+
+			/// <summary>
+			/// Road tunnel material, used whereever we got tunnels.
+			/// </summary>
+			Material roadTunnelMaterial = new Material(
+				// Use mainly ambient color (tunnel uses lightmaps)
+				new Color(182, 182, 182),
+				new Color(80, 80, 80),
+				new Color(64, 64, 64),
+				"RoadTunnel.tga", "RoadTunnelNormal.tga", "", "");
+
+			var material = new LitSolidMaterial
+			{
+				DiffuseColor = new Color(80, 80, 80),
+				SpecularColor = new Color(64, 64, 64),
+				AmbientLightColor = new Color(182, 182, 182),
+				DiffuseTexturePath = "Textures/RoadBack.tga",
+				NormalTexturePath = "Textures/RoadBackNormal.tga",
+				RasterizerState = RasterizerState.CullNone
+			};
+
+			material.Load(BaseGame.Content);
+
+			var meshPart = new DrMeshPart(roadTunnelVb, roadTunnelIb, roadTunnelVertices.CalculateBoundingBox());
+
+			return new MeshNode
+			{
+				Mesh = meshPart,
+				Material = material
+			};
+		}
+
+		/// <summary>
+		/// Generate vertices and objects
+		/// </summary>
+		private void GenerateVerticesAndObjects(Landscape landscape)
+		{
+			_roadMesh = CreateRoadMesh();
+			_roadBackMesh = CreateRoadBackMesh();
+			_roadTunnelMesh = CreateRoadTunnelMesh();
+
 			leftRail = new GuardRail(points, GuardRail.Modes.Left, landscape);
 			rightRail = new GuardRail(points, GuardRail.Modes.Right, landscape);
-			#endregion
 
-			#region Generate columns
 			columns = new TrackColumns(points, landscape);
-			#endregion
 
 			GenerateObjectsForTrack(landscape);
 		}
@@ -1119,17 +1116,9 @@ namespace RacingGame.Tracks
 		{
 			if (disposing)
 			{
-				roadMaterial.Dispose();
-				roadBackMaterial.Dispose();
-				roadTunnelMaterial.Dispose();
-				roadCementMaterial.Dispose();
-				guardRailMaterial.Dispose();
-				roadVb.Dispose();
-				roadIb.Dispose();
-				roadBackVb.Dispose();
-				roadBackIb.Dispose();
-				roadTunnelVb.Dispose();
-				roadTunnelIb.Dispose();
+				_roadMesh.Dispose();
+				_roadBackMesh.Dispose();
+				_roadTunnelMesh?.Dispose();
 				leftRail.Dispose();
 				rightRail.Dispose();
 				columns.Dispose();
@@ -1138,159 +1127,35 @@ namespace RacingGame.Tracks
 		#endregion
 
 		#region Render
-		/// <summary>
-		/// Render
-		/// </summary>
-		public void Render()
-		{
-			// We use tangent vertices for everything here
 
-			// Restore the world matrix
-			BaseGame.WorldMatrix = Matrix.Identity;
+		/*		/// <summary>
+				/// Render road vertices
+				/// </summary>
+				private void RenderRoadVertices()
+				{
+					BaseGame.Device.SetVertexBuffer(roadVb);
+					BaseGame.Device.Indices = roadIb;
+					BaseGame.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList,
+						0, 0, points.Count * 5,
+						0, (points.Count - 1) * 8);
+				}
 
-			// Make sure Anisotropic filtering is enabled for the road
-			BaseGame.Device.SamplerStates[0] = SamplerState.AnisotropicWrap;
-			//BaseGame.Device.SamplerStates[0].MinFilter = TextureFilter.Anisotropic;
-			//BaseGame.Device.SamplerStates[0].MagFilter = TextureFilter.Anisotropic;
+				/// <summary>
+				/// Render road back vertices
+				/// </summary>
+				private void RenderRoadBackVertices()
+				{
+					BaseGame.Device.SetVertexBuffer(roadBackVb);
+					BaseGame.Device.Indices = roadBackIb;
+					BaseGame.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList,
+						0, 0, points.Count * 4,
+						0, (points.Count - 1) * 6);
+				}*/
 
-			//BaseGame.Device.SamplerStates[0].MipFilter = TextureFilter.Linear;
-			//BaseGame.Device.SamplerStates[0].MaxAnisotropy = 8; // 8 is enough, isn't it?
-
-			// Render the road itself
-			ShaderEffect.normalMapping.Render(
-				roadMaterial,
-				// Use antrisopic filtering only if we have a fast GPU
-				BaseGame.HighDetail ?
-				"SpecularRoad20" :
-				"Specular20",
-				new BaseGame.RenderHandler(RenderRoadVertices));
-
-			// Render the road back hull
-			ShaderEffect.normalMapping.Render(
-				roadBackMaterial,
-				// Use antrisopic filtering only if we have a fast GPU
-				BaseGame.HighDetail ?
-				"SpecularRoad20" :
-				"Specular20",
-				new BaseGame.RenderHandler(RenderRoadBackVertices));
-
-			// Render all tunnels (culling off)
-			if (roadTunnelVb != null)
-			{
-				ShaderEffect.normalMapping.Render(
-					roadTunnelMaterial,
-					"Diffuse20",
-					new BaseGame.RenderHandler(RenderRoadTunnelVertices));
-			}
-
-			// Render all guard rails
-			leftRail.Render(guardRailMaterial);
-			rightRail.Render(guardRailMaterial);
-
-			// Render all columns
-			columns.Render(roadCementMaterial);
-		}
-
-		/// <summary>
-		/// Render road vertices
-		/// </summary>
-		private void RenderRoadVertices()
-		{
-			BaseGame.Device.SetVertexBuffer(roadVb);
-			BaseGame.Device.Indices = roadIb;
-			BaseGame.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList,
-				0, 0, points.Count * 5,
-				0, (points.Count - 1) * 8);
-		}
-
-		/// <summary>
-		/// Render road back vertices
-		/// </summary>
-		private void RenderRoadBackVertices()
-		{
-			BaseGame.Device.SetVertexBuffer(roadBackVb);
-			BaseGame.Device.Indices = roadBackIb;
-			BaseGame.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList,
-				0, 0, points.Count * 4,
-				0, (points.Count - 1) * 6);
-		}
-
-		/// <summary>
-		/// Render road tunnel vertices
-		/// </summary>
-		private void RenderRoadTunnelVertices()
-		{
-			if (roadTunnelVb == null)
-				return;
-
-			// Disable culling (render tunnel from both sides)
-			BaseGame.Device.RasterizerState = RasterizerState.CullNone;
-
-			// Render vertices
-			BaseGame.Device.SetVertexBuffer(roadTunnelVb);
-			BaseGame.Device.Indices = roadTunnelIb;
-			BaseGame.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList,
-				0, 0, roadTunnelVertices.Length,
-				0, roadTunnelIndices.Length / 3);
-
-			// Restore culling (default is always counter clockwise)
-			BaseGame.Device.RasterizerState = RasterizerState.CullCounterClockwise;
-		}
-		#endregion
-
-		#region Generate and use shadow for the track
-		/// <summary>
-		/// Generate shadow
-		/// </summary>
-		public void GenerateShadow()
-		{
-			// Generate shadows for the road and the tunnel, ignore the road back
-			ShaderEffect.shadowMapping.UpdateGenerateShadowWorldMatrix(
-				Matrix.Identity);
-			// We use tangent vertices for everything here
-
-			// Disable culling (render road and tunnel from both sides,
-			// this gives correct shadows to loopings, tunnels and overlappings)
-			BaseGame.Device.RasterizerState = RasterizerState.CullNone;
-
-			// Render road and tunnels
-			RenderRoadVertices();
-			RenderRoadTunnelVertices();
-
-			// Generate shadows for both rails
-			leftRail.GenerateShadow();
-			rightRail.GenerateShadow();
-
-			// And for all columns
-			//not required, we don't see near columns anyway:
-			//columns.GenerateShadow();
-		}
-
-		/// <summary>
-		/// Use shadow
-		/// </summary>
-		public void UseShadow()
-		{
-			// Receive shadow on the landscape, just render it out.
-			ShaderEffect.shadowMapping.UpdateCalcShadowWorldMatrix(
-				Matrix.Identity);
-			RenderRoadVertices();
-			// Tunnel shadows are kinda important ^^
-			RenderRoadTunnelVertices();
-
-			// Guard rails do not need to receive shadow often, but it will look
-			// very wrong if the car does not throw shadows at the guard rails.
-			// For that reason lets include them.
-			leftRail.UseShadow();
-			rightRail.UseShadow();
-
-			// And for all columns
-			//not required, we don't see near columns anyway:
-			//columns.UseShadow();
-		}
 		#endregion
 
 		#region Get track position matrix
+
 		/// <summary>
 		/// Get track position matrix, put in a value between 0 and 1 and
 		/// you get a position on the track (0=start, 1=end).

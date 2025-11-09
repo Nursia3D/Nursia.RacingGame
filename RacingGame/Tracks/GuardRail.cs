@@ -12,11 +12,12 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using RacingGame.Graphics;
-using RacingGame.Shaders;
-using Model = RacingGame.Graphics.Model;
 using RacingGame.Landscapes;
+using Nursia.SceneGraph;
+using Nursia.Materials;
+using DigitalRiseModel;
+using RacingGame.Utilities;
 #endregion
 
 namespace RacingGame.Tracks
@@ -145,30 +146,15 @@ namespace RacingGame.Tracks
 		#endregion
 
 		#region Variables
+
 		/// <summary>
 		/// Rail points for the whole guard rail.
 		/// </summary>
 		TrackVertex[] railPoints = null;
-		/// <summary>
-		/// Rail vertices.
-		/// </summary>
-		TangentVertex[] railVertices = null;
-		/// <summary>
-		/// Vertex buffer of guard rail.
-		/// </summary>
-		VertexBuffer railVb = null;
-		/// <summary>
-		/// Index buffer orf guard rail.
-		/// </summary>
-		IndexBuffer railIb = null;
 
-		/*now done in track class!
-        /// <summary>
-        /// Matrix list for each of the holder pile objects we have to render.
-        /// </summary>
-        List<Matrix> holderPileMatrices = new List<Matrix>();
-         */
 		#endregion
+
+		public MeshNode Mesh { get; }
 
 		#region Constructor
 		/// <summary>
@@ -218,7 +204,7 @@ namespace RacingGame.Tracks
 			#endregion
 
 			#region Generate vertex buffer
-			railVertices =
+			var railVertices =
 				new TangentVertex[railPoints.Length * GuardRailVertices.Length];
 
 			// Current texture coordinate for the guardrail in our current direction.
@@ -342,7 +328,7 @@ namespace RacingGame.Tracks
 			//    railVertices.Length,
 			//    ResourceUsage.WriteOnly,
 			//    ResourceManagementMode.Automatic);
-			railVb = new VertexBuffer(
+			var railVb = new VertexBuffer(
 				BaseGame.Device,
 				typeof(TangentVertex),
 				railVertices.Length,
@@ -389,84 +375,39 @@ namespace RacingGame.Tracks
 			//    indices.Length,
 			//    ResourceUsage.WriteOnly,
 			//    ResourceManagementMode.Automatic);
-			railIb = new IndexBuffer(
+			var railIb = new IndexBuffer(
 				BaseGame.Device,
 				typeof(int),
 				indices.Length,
 				BufferUsage.WriteOnly);
 			railIb.SetData(indices);
 			#endregion
+
+			/// Guard rail material, used for the left and right guard rails.
+			/// It is also used for the guard rail 
+			var material = new LitSolidMaterial
+			{
+				DiffuseColor = new Color(182, 182, 182),
+				SpecularColor = new Color(225, 225, 225),
+				AmbientLightColor = new Color(72, 72, 72),
+				DiffuseTexturePath = "Textures/Leitplanke.tga",
+				NormalTexturePath = "Textures/LeitplankeNormal.tga"
+			};
+
+			var meshPart = new DrMeshPart(railVb, railIb, railVertices.CalculateBoundingBox());
+
+			Mesh = new MeshNode
+			{
+				Mesh = meshPart,
+				Material = material
+			};
 		}
 		#endregion
 
 		#region Dispose
 		public void Dispose()
 		{
-			railVb.Dispose();
-			railIb.Dispose();
-		}
-		#endregion
-
-		#region Render
-		/// <summary>
-		/// Render
-		/// </summary>
-		public void Render(Material guardRailMaterial)
-		{
-			// We use tangent vertices for everything here
-
-			// Restore the world matrix
-			BaseGame.WorldMatrix = Matrix.Identity;
-
-			// Render the complete guardrail
-			ShaderEffect.normalMapping.Render(
-				guardRailMaterial,
-				"Specular20",
-				new BaseGame.RenderHandler(RenderGuardRailVertices));
-
-			/*done in track class
-            // And also render all the holder piles
-            foreach (Matrix mat in holderPileMatrices)
-            {
-                holderModel.Render(mat);
-            }
-             */
-
-			// Restore the world matrix
-			BaseGame.WorldMatrix = Matrix.Identity;
-		}
-
-		/// <summary>
-		/// Render guard rail vertices
-		/// </summary>
-		private void RenderGuardRailVertices()
-		{
-			BaseGame.Device.SetVertexBuffer(railVb);
-			BaseGame.Device.Indices = railIb;
-			BaseGame.Device.DrawIndexedPrimitives(
-				PrimitiveType.TriangleList,
-				0, 0, railVertices.Length,
-				0, (GuardRailVertices.Length - 1) * (railPoints.Length - 1) * 2);
-		}
-		#endregion
-
-		#region Generate and use shadow for the guard rails
-		/// <summary>
-		/// Generate shadow
-		/// </summary>
-		public void GenerateShadow()
-		{
-			// Just render out the guard rails (world matrix is already set)
-			RenderGuardRailVertices();
-		}
-
-		/// <summary>
-		/// Use shadow
-		/// </summary>
-		public void UseShadow()
-		{
-			// Receive shadow on the guard rails
-			RenderGuardRailVertices();
+			Mesh.Dispose();
 		}
 		#endregion
 	}
