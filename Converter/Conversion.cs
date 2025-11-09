@@ -120,6 +120,7 @@ namespace Converter
 
 			foreach (var pair in materialData.MeshesMaterials)
 			{
+				var found = false;
 				for (var i = 0; i < model.Meshes.Length; ++i)
 				{
 					var mesh = model.Meshes[i];
@@ -127,6 +128,7 @@ namespace Converter
 
 					if (pair.Key == name)
 					{
+						found = true;
 						for (var j = 0; j < mesh.MeshParts.Count; ++j)
 						{
 							if (pair.Value.Length != 0)
@@ -139,6 +141,11 @@ namespace Converter
 							}
 						}
 					}
+				}
+
+				if (!found)
+				{
+					Console.WriteLine($"Warning: could not find mesh {pair.Key}");
 				}
 			}
 

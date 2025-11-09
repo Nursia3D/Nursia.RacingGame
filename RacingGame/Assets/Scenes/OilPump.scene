@@ -10,13 +10,13 @@
       [
         {
           "$type": "Nursia.Materials.LitSolidMaterial, Nursia",
-          "AmbientLightColor": "#191919FF",
+          "AmbientColor": "#191919FF",
           "DiffuseColor": "White",
           "SpecularColor": "White",
           "SpecularPower": 16.0,
           "EmissiveColor": "Black",
-          "DiffuseTexturePath": "../Textures/OilWell.tga",
-          "NormalTexturePath": "../Textures/OilWellNormal.tga"
+          "DiffuseTexturePath": "../Textures/OilPump.tga",
+          "NormalTexturePath": "../Textures/OilPumpNormal.tga"
         }
       ]
     ],
