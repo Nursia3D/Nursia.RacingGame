@@ -11,6 +11,7 @@
 using DigitalRiseModel;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Nursia;
 using Nursia.Materials;
 using Nursia.SceneGraph;
 using RacingGame.Graphics;
@@ -258,13 +259,13 @@ namespace RacingGame.Tracks
 			// Create the vertex buffer from our vertices.
 			// fix
 			//columnVb = new VertexBuffer(
-			//    BaseGame.Device,
+			//    Nrs.GraphicsDevice,
 			//    typeof(TangentVertex),
 			//    columnVertices.Length,
 			//    ResourceUsage.WriteOnly,
 			//    ResourceManagementMode.Automatic);
 			var columnVb = new VertexBuffer(
-				BaseGame.Device,
+				Nrs.GraphicsDevice,
 				typeof(TangentVertex),
 				columnVertices.Length,
 				BufferUsage.WriteOnly);
@@ -307,13 +308,13 @@ namespace RacingGame.Tracks
 			// Create the index buffer from our indices.
 			// fix
 			//columnIb = new IndexBuffer(
-			//    BaseGame.Device,
+			//    Nrs.GraphicsDevice,
 			//    typeof(int),
 			//    indices.Length,
 			//    ResourceUsage.WriteOnly,
 			//    ResourceManagementMode.Automatic);
 			var columnIb = new IndexBuffer(
-				BaseGame.Device,
+				Nrs.GraphicsDevice,
 				typeof(int),
 				indices.Length,
 				BufferUsage.WriteOnly);

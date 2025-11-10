@@ -19,6 +19,7 @@ using RacingGame.GameLogic;
 using RacingGame.Graphics;
 using RacingGame.Helpers;
 using Texture = RacingGame.Graphics.Texture;
+using Nursia;
 #endregion
 
 namespace RacingGame.Shaders
@@ -192,10 +193,10 @@ namespace RacingGame.Shaders
 			sceneMapTexture.Resolve();
 
 			// Don't use or write to the z buffer
-			BaseGame.Device.DepthStencilState = DepthStencilState.None;
+			Nrs.GraphicsDevice.DepthStencilState = DepthStencilState.None;
 
 			// Also don't use any kind of blending.
-			BaseGame.Device.BlendState = BlendState.Opaque;
+			Nrs.GraphicsDevice.BlendState = BlendState.Opaque;
 
 			if (windowSize != null)
 				windowSize.SetValue(
@@ -259,7 +260,7 @@ namespace RacingGame.Shaders
 			finally
 			{
 				// Restore z buffer state
-				BaseGame.Device.DepthStencilState = DepthStencilState.Default;
+				Nrs.GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 			}
 		}
 		#endregion

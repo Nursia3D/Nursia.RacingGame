@@ -18,6 +18,7 @@ using Nursia.SceneGraph;
 using Nursia.Materials;
 using DigitalRiseModel;
 using RacingGame.Utilities;
+using Nursia;
 #endregion
 
 namespace RacingGame.Tracks
@@ -320,13 +321,13 @@ namespace RacingGame.Tracks
 
 			// Create the vertex buffer from our vertices.
 			//railVb = new VertexBuffer(
-			//    BaseGame.Device,
+			//    Nrs.GraphicsDevice,
 			//    typeof(TangentVertex),
 			//    railVertices.Length,
 			//    ResourceUsage.WriteOnly,
 			//    ResourceManagementMode.Automatic);
 			var railVb = new VertexBuffer(
-				BaseGame.Device,
+				Nrs.GraphicsDevice,
 				typeof(TangentVertex),
 				railVertices.Length,
 				BufferUsage.WriteOnly);
@@ -367,13 +368,13 @@ namespace RacingGame.Tracks
 
 			// Create the index buffer from our indices.
 			//railIb = new IndexBuffer(
-			//    BaseGame.Device,
+			//    Nrs.GraphicsDevice,
 			//    typeof(int),
 			//    indices.Length,
 			//    ResourceUsage.WriteOnly,
 			//    ResourceManagementMode.Automatic);
 			var railIb = new IndexBuffer(
-				BaseGame.Device,
+				Nrs.GraphicsDevice,
 				typeof(int),
 				indices.Length,
 				BufferUsage.WriteOnly);

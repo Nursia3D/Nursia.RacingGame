@@ -33,8 +33,210 @@ namespace RacingGame.GameLogic
 	/// If we want to have more than 1 player (e.g. in multiplayer mode)
 	/// you should add a multiplayer class and have all player instances there.
 	/// </summary>
-	public class Player : ChaseCamera
+	public partial class Player
 	{
+		private readonly Landscape _landscape;
+
+		#region Global game parameters (game time, game over, etc.)
+		/// <summary>
+		/// Current game time in ms. Used for time display in game. Also used to
+		/// update the sun position and for the highscores.
+		/// Will be stopped if we die or if we are still zooming in.
+		/// </summary>
+		protected float currentGameTimeMilliseconds = 0;
+
+		/// <summary>
+		/// Current lap. Increases and when we reach 3, the game is won.
+		/// </summary>
+		protected int lap;
+
+		/// <summary>
+		/// Current lap
+		/// </summary>
+		public int CurrentLap
+		{
+			get
+			{
+				return lap;
+			}
+		}
+
+		/// <summary>
+		/// Remember best lap time, unused until we complete the first lap.
+		/// Then it is set every lap, always using the best and fastest lap time.
+		/// </summary>
+		private float bestLapTimeMilliseconds = 0;
+
+		/// <summary>
+		/// Best lap time we have archived in this game
+		/// </summary>
+		public float BestTimeMilliseconds
+		{
+			get
+			{
+				return bestLapTimeMilliseconds;
+			}
+		}
+
+		/// <summary>
+		/// Start new lap, will reset all lap variables and the game time.
+		/// If all laps are done the game is over.
+		/// </summary>
+		protected void StartNewLap()
+		{
+			lap++;
+
+			_landscape.StartNewLap();
+
+			// Got new best time?
+			if (bestLapTimeMilliseconds == 0 ||
+				currentGameTimeMilliseconds < bestLapTimeMilliseconds)
+				bestLapTimeMilliseconds = currentGameTimeMilliseconds;
+
+			// Start at 0:00.00 again
+			currentGameTimeMilliseconds = zoomInTime;
+		}
+
+		/// <summary>
+		/// Game time ms, will return negative values if currently zooming in!
+		/// </summary>
+		/// <returns>Int</returns>
+		public float GameTimeMilliseconds
+		{
+			get
+			{
+				return currentGameTimeMilliseconds - zoomInTime;
+			}
+		}
+
+		/// <summary>
+		/// How long do we zoom in.
+		/// </summary>
+		public const int StartGameZoomTimeMilliseconds = 5000;
+
+		/// <summary>
+		/// Zoom in time
+		/// </summary>
+		private float zoomInTime = StartGameZoomTimeMilliseconds;
+
+		/// <summary>
+		/// Zoom in time
+		/// </summary>
+		/// <returns>Float</returns>
+		protected float ZoomInTime
+		{
+			get
+			{
+				return zoomInTime;
+			}
+			set
+			{
+				zoomInTime = value;
+			}
+		}
+
+		/// <summary>
+		/// The amount of time to remain fully zoomed in waiting for start light;
+		/// </summary>
+		public const int StartGameZoomedInTime = 3000;
+
+		/// <summary>
+		/// Won or lost?
+		/// </summary>
+		protected bool victory;
+
+		/// <summary>
+		/// Property for Victory
+		/// </summary>
+		public bool Victory
+		{
+			get
+			{
+				return victory;
+			}
+		}
+
+		/// <summary>
+		/// Level num, set when starting game!
+		/// </summary>
+		protected int levelNum;
+
+		public int LevelNum
+		{
+			get
+			{
+				return levelNum;
+			}
+		}
+
+		/// <summary>
+		/// Game over?
+		/// </summary>
+		protected bool isGameOver;
+
+		/// <summary>
+		/// Is game over?
+		/// </summary>
+		/// <returns>Bool</returns>
+		public bool GameOver
+		{
+			get
+			{
+				return isGameOver;
+			}
+		}
+
+		/// <summary>
+		/// Did the player win the game? Makes only sense if GameOver is true!
+		/// </summary>
+		public bool WonGame
+		{
+			get
+			{
+				return victory;
+			}
+		}
+
+		/// <summary>
+		/// Remember if we already uploaded our highscore for this game.
+		/// Don't do this twice (e.g. when pressing esc).
+		/// </summary>
+		private bool alreadyUploadedHighscore = false;
+
+		/// <summary>
+		/// Set game over and upload highscore
+		/// </summary>
+		public void SetGameOverAndUploadHighscore()
+		{
+			// Set gameOver to true to mark this game as ended.
+			isGameOver = true;
+
+			// Upload highscore
+			if (alreadyUploadedHighscore == false)
+			{
+				alreadyUploadedHighscore = true;
+				Highscores.SubmitHighscore(levelNum,
+					(int)currentGameTimeMilliseconds);
+			}
+		}
+
+		/// <summary>
+		/// Helper to determinate if user can control the car.
+		/// If game just started we still zoom into the chase camera.
+		/// </summary>
+		/// <returns>Bool</returns>
+		public bool CanControlCar
+		{
+			get
+			{
+				return zoomInTime <= 0 &&
+					GameOver == false;
+			}
+		}
+
+		private bool firstFrame = true;
+		#endregion
+
 		#region Variables
 		/// <summary>
 		/// Remember all lap times for the victory screen.
@@ -71,24 +273,77 @@ namespace RacingGame.GameLogic
 		#endregion
 
 		#region Constructor
+
 		/// <summary>
-		/// Create chase camera
+		/// Create chase camera. Sets the car position and the camera position,
+		/// which is then used to rotate around the car.
+		/// </summary>
+		/// <param name="setCarPosition">Set car position</param>
+		/// <param name="setDirection">Set direction</param>
+		/// <param name="setUp">Set up</param>
+		/// <param name="setCameraPos">Set camera pos</param>
+		public Player(Landscape landscape, Vector3 setCarPosition, Vector3 setDirection, Vector3 setUp, Vector3 setCameraPos)
+		{
+			_landscape = landscape ?? throw new ArgumentNullException(nameof(landscape));
+
+			SetCarPosition(setCarPosition, setDirection, setUp);
+			// Set camera position and calculate rotation from look pos
+			SetCameraPosition(setCameraPos);
+		}
+
+		/// <summary>
+		/// Create chase camera. Sets the car position and the camera position,
+		/// which is then used to rotate around the car.
 		/// </summary>
 		/// <param name="setCarPosition">Set car position</param>
 		/// <param name="setCameraPos">Set camera pos</param>
-		public Player(Vector3 setCarPosition)
-			: base(setCarPosition)
+		public Player(Landscape landscape, Vector3 setCarPosition, Vector3 setCameraPos)
 		{
+			_landscape = landscape ?? throw new ArgumentNullException(nameof(landscape));
+
+			SetCarPosition(setCarPosition, new Vector3(0, 1, 0), new Vector3(0, 0, 1));
+			// Set camera position and calculate rotation from look pos
+			SetCameraPosition(setCameraPos);
 		}
+
+		/// <summary>
+		/// Create chase camera. Just sets the car position.
+		/// The chase camera is set behind it.
+		/// </summary>
+		/// <param name="setCarPosition">Set car position</param>
+		public Player(Landscape landscape, Vector3 setCarPosition)
+		{
+			_landscape = landscape ?? throw new ArgumentNullException(nameof(landscape));
+
+			SetCarPosition(setCarPosition,
+				new Vector3(0, 1, 0), new Vector3(0, 0, 1));
+			// Set camera position and calculate rotation from look pos
+			SetCameraPosition(
+				//setCarPosition - new Vector3(0, 0.5f, 1.0f) * carDir);
+				setCarPosition + new Vector3(0, 10.0f, 25.0f));
+		}
+
 		#endregion
 
 		#region Reset
 		/// <summary>
 		/// Reset player values.
 		/// </summary>
-		public override void Reset()
+		public void Reset()
 		{
-			base.Reset();
+			levelNum = TrackSelection.SelectedTrackNumber;
+			isGameOver = false;
+			alreadyUploadedHighscore = false;
+			currentGameTimeMilliseconds = 0;
+			bestLapTimeMilliseconds = 0;
+			lap = 0;
+			victory = false;
+			zoomInTime = StartGameZoomTimeMilliseconds;
+			firstFrame = true;
+
+			ResetPlayer();
+			ResetChaseCamera();
+
 			lapTimes.Clear();
 		}
 		#endregion
@@ -97,11 +352,10 @@ namespace RacingGame.GameLogic
 		/// <summary>
 		/// Update game logic, called every frame.
 		/// </summary>
-		public override void Update()
+		public void Update(GameTime gameTime)
 		{
 			// Don't handle any more game logic if game is over.
-			if (RacingGameManager.InGame &&
-				ZoomInTime <= 0)
+			if (RacingGame.InGame && ZoomInTime <= 0)
 			{
 				// Game over? Then show end screen!
 				if (isGameOver)
@@ -109,8 +363,8 @@ namespace RacingGame.GameLogic
 					// Just rotate around, don't use camera class!
 					cameraPos = CarPosition + new Vector3(0, -5, +20) +
 						Vector3.TransformNormal(new Vector3(30, 0, 0),
-						Matrix.CreateRotationZ(BaseGame.TotalTimeMilliseconds / 2593.0f));
-					BaseGame.ViewMatrix = Matrix.CreateLookAt(
+						Matrix.CreateRotationZ((float)gameTime.TotalGameTime.TotalMilliseconds / 2593.0f));
+					rotMatrix = Matrix.CreateLookAt(
 						cameraPos, CarPosition, CarUpVector);
 					int rank = Highscores.GetRankFromCurrentTime(
 						this.levelNum, (int)this.BestTimeMilliseconds);
@@ -156,7 +410,7 @@ namespace RacingGame.GameLogic
 				// used to check if the player died.
 				if (this.isCarOnGround == false)
 					inAirTimeMilliseconds +=
-						BaseGame.ElapsedTimeThisFrameInMilliseconds;
+						(float)gameTime.ElapsedGameTime.TotalMilliseconds;
 				else
 					// Back on ground, reset
 					inAirTimeMilliseconds = 0;
@@ -198,7 +452,39 @@ namespace RacingGame.GameLogic
 				}
 			}
 
-			base.Update();
+			// Since there is no loading screen, we need to skip the first frame because
+			// the loading will cause ElapsedTimeThisFrameInMilliseconds to be too high
+			if (firstFrame)
+			{
+				firstFrame = false;
+			}
+			else
+			{
+				// Handle zoomInTime at the beginning of a game
+				if (RacingGame.InGame && zoomInTime > 0)
+				{
+					float lastZoomInTime = zoomInTime;
+					zoomInTime -= (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+
+					if (zoomInTime < 2000 &&
+						(int)((lastZoomInTime + 1000) / 1000) != (int)((zoomInTime + 1000) / 1000))
+					{
+						// Handle start traffic light object (red, yellow, green!)
+						_landscape.ReplaceStartLightObject(
+							2 - (int)((zoomInTime + 1000) / 1000));
+					}
+				}
+			}
+
+			// Don't handle any more game logic if game is over or still zooming in.
+			if (CanControlCar)
+			{
+				// Increase game time
+				currentGameTimeMilliseconds += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+			}
+
+			UpdatePlayer(gameTime);
+			UpdateChaseCamera(gameTime);
 		}
 		#endregion
 	}

@@ -11,6 +11,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Nursia;
 using Nursia.SceneGraph;
 using Nursia.SceneGraph.Cameras;
 using RacingGame.GameLogic;
@@ -536,7 +537,7 @@ namespace RacingGame.Graphics
 				// Mix camera positions, interpolate slowly, much smoother camera!
 				carPos + oldCarForward * 13 - oldCarUp * 1.3f);
 
-			RacingGameManager.Player.Update();
+			// RacingGameManager.Player.Update();
 		}
 
 		/// <summary>
@@ -902,7 +903,7 @@ namespace RacingGame.Graphics
 				throw new ArgumentNullException("lineManager2D");
 
 			// Disable depth buffer for UI
-			BaseGame.Device.DepthStencilState = DepthStencilState.None;
+			Nrs.GraphicsDevice.DepthStencilState = DepthStencilState.None;
 
 			// Draw all sprites
 			Texture.additiveSprite.End();
@@ -913,7 +914,7 @@ namespace RacingGame.Graphics
 			lineManager2D.Render();
 
 			// Restore depth buffer?
-			BaseGame.Device.DepthStencilState = DepthStencilState.Default;
+			Nrs.GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 		}
 
 		/// <summary>

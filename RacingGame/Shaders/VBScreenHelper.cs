@@ -14,6 +14,7 @@ using System.Text;
 using RacingGame.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Nursia;
 #endregion
 
 namespace RacingGame.Shaders
@@ -65,7 +66,7 @@ namespace RacingGame.Shaders
 				};
 
 				vbScreen = new VertexBuffer(
-					BaseGame.Device,
+					Nrs.GraphicsDevice,
 					typeof(VertexPositionTexture),
 					vertices.Length,
 					BufferUsage.WriteOnly);
@@ -81,8 +82,8 @@ namespace RacingGame.Shaders
 			public void Render()
 			{
 				// Rendering is pretty straight forward (if you know how anyway).
-				BaseGame.Device.SetVertexBuffer(vbScreen);
-				BaseGame.Device.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
+				Nrs.GraphicsDevice.SetVertexBuffer(vbScreen);
+				Nrs.GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
 			}
 			#endregion
 		}
@@ -130,13 +131,13 @@ namespace RacingGame.Shaders
 				// Create vertex buffer
 				// fix
 				//vertexBuffer = new VertexBuffer(
-				//    BaseGame.Device,
+				//    Nrs.GraphicsDevice,
 				//    typeof(VertexPositionTexture),
 				//    gridWidth * gridHeight,
 				//    ResourceUsage.WriteOnly,
 				//    ResourceManagementMode.Automatic);
 				vertexBuffer = new VertexBuffer(
-					BaseGame.Device,
+					Nrs.GraphicsDevice,
 					typeof(VertexPositionTexture),
 					gridWidth * gridHeight,
 					BufferUsage.WriteOnly);
@@ -162,13 +163,13 @@ namespace RacingGame.Shaders
 				// Index buffer
 				// fix
 				//indexBuffer = new IndexBuffer(
-				//    BaseGame.Device,
+				//    Nrs.GraphicsDevice,
 				//    typeof(ushort),
 				//    (gridWidth - 1) * (gridHeight - 1) * 2 * 3,
 				//    ResourceUsage.WriteOnly,
 				//    ResourceManagementMode.Automatic);
 				indexBuffer = new IndexBuffer(
-					BaseGame.Device,
+					Nrs.GraphicsDevice,
 					typeof(ushort),
 					(gridWidth - 1) * (gridHeight - 1) * 2 * 3,
 					BufferUsage.WriteOnly);
@@ -205,9 +206,9 @@ namespace RacingGame.Shaders
 			public void Render()
 			{
 				// Rendering is pretty straight forward (if you know how anyway).
-				BaseGame.Device.SetVertexBuffer(vertexBuffer);
-				BaseGame.Device.Indices = indexBuffer;
-				BaseGame.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList,
+				Nrs.GraphicsDevice.SetVertexBuffer(vertexBuffer);
+				Nrs.GraphicsDevice.Indices = indexBuffer;
+				Nrs.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList,
 					0, 0, gridWidth * gridHeight,
 					0, (gridWidth - 1) * (gridHeight - 1) * 2);
 			}

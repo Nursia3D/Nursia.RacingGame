@@ -9,15 +9,8 @@
 
 #region Using directives
 using System;
-using RacingGame.Properties;
 using AssetManagementBase;
-using Nursia;
 
-
-
-#if !XBOX360
-using Microsoft.Xna.Framework.Graphics;
-#endif
 #endregion
 
 namespace RacingGame
@@ -50,24 +43,20 @@ namespace RacingGame
 		/// </summary>
 		public static void StartGame()
 		{
-#if !XBOX360
 			try
 			{
-#endif
-				AMBConfiguration.Logger = s => Console.WriteLine(s);
+				AMBConfiguration.Logger = Console.WriteLine;
 				// Nrs.DebugSettings.DrawBoundingBoxes = true;
-				using (RacingGameManager game = new RacingGameManager())
+				using (var game = new RacingGame())
 				{
 					game.Run();
 				}
-#if !XBOX360
 			}
 			catch (Exception ex)
 			{
 				Console.WriteLine(ex.Message);
 				Console.Write(ex.StackTrace);
 			}
-#endif
 		}
 		#endregion
 	}

@@ -48,7 +48,7 @@ namespace RacingGame
 		/// of many derived classes. Player, car and camera position is set
 		/// when the game starts depending on the selected level.
 		/// </summary>
-		private static Player player = new Player(new Vector3(0, 0, 0));
+		private static Player player = new Player(null, new Vector3(0, 0, 0));
 
 		/// <summary>
 		/// Helper texture for color selection
@@ -288,7 +288,7 @@ namespace RacingGame
 				if (gameScreens.Peek().GetType() != typeof(LoadingScreen))
 				{
 					// Update player and game logic
-					player.Update();
+					// player.Update();
 				}
 
 				//Update the game screen
@@ -342,7 +342,7 @@ namespace RacingGame
 		protected override void PostUIRender()
 		{
 			// Enable depth buffer again
-			BaseGame.Device.DepthStencilState = DepthStencilState.Default;
+			Nrs.GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 
 			// Currently in car selection screen?
 			if (gameScreens.Count > 0 &&

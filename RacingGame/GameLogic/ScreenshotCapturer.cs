@@ -19,6 +19,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 using RacingGame.Graphics;
+using Nursia;
 #endregion
 
 namespace RacingGame.GameLogic
@@ -141,15 +142,15 @@ namespace RacingGame.GameLogic
                 if (Directory.Exists(Directories.ScreenshotsDirectory) == false)
                     Directory.CreateDirectory(Directories.ScreenshotsDirectory);
 
-                int width = BaseGame.Device.PresentationParameters.BackBufferWidth;
-                int height = BaseGame.Device.PresentationParameters.BackBufferHeight;
+                int width = Nrs.GraphicsDevice.PresentationParameters.BackBufferWidth;
+                int height = Nrs.GraphicsDevice.PresentationParameters.BackBufferHeight;
 
                 using (
-                    var tex = new Texture2D(BaseGame.Device, width, height, false,
-                                            BaseGame.Device.PresentationParameters.BackBufferFormat))
+                    var tex = new Texture2D(Nrs.GraphicsDevice, width, height, false,
+                                            Nrs.GraphicsDevice.PresentationParameters.BackBufferFormat))
                 {
                     int[] backbuffer = new int[width*height];
-                    BaseGame.Device.GetBackBufferData(backbuffer);
+                    Nrs.GraphicsDevice.GetBackBufferData(backbuffer);
 
                     tex.SetData(backbuffer);
 

@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using RacingGame.Graphics;
+using Nursia;
 #endregion
 
 namespace RacingGame.GameScreens
@@ -62,7 +63,7 @@ namespace RacingGame.GameScreens
 		/// </summary>
 		public bool Render()
 		{
-			SpriteBatch textBatch = new SpriteBatch(BaseGame.Device);
+			SpriteBatch textBatch = new SpriteBatch(Nrs.GraphicsDevice);
 			Vector2 position = new Vector2((BaseGame.Width / 2) - 50, (BaseGame.Height / 2) - 20);
 
 			for (int i = 0; i < loadingText.Length; i++)

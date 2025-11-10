@@ -17,6 +17,7 @@ using RacingGame;
 using System.Collections.Generic;
 using RacingGame.Helpers;
 using RacingGame.Shaders;
+using Nursia;
 #endregion
 
 namespace RacingGame.Graphics
@@ -151,7 +152,7 @@ namespace RacingGame.Graphics
 		/// </summary>
 		public LineManager3D()
 		{
-			if (BaseGame.Device == null)
+			if (Nrs.GraphicsDevice == null)
 				throw new ArgumentNullException(
 					"XNA device is not initialized, can't init line manager.");
 		}
@@ -280,7 +281,7 @@ namespace RacingGame.Graphics
 					delegate
 					{
 						BaseGame.SetAlphaBlendingEnabled(true);
-						BaseGame.Device.DrawUserPrimitives<VertexPositionColor>(
+						Nrs.GraphicsDevice.DrawUserPrimitives<VertexPositionColor>(
 							PrimitiveType.LineList, lineVertices, 0, numOfPrimitives);
 					});
 			}

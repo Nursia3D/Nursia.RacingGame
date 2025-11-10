@@ -14,6 +14,7 @@ using System;
 using System.IO;
 using RacingGame.Helpers;
 using AssetManagementBase;
+using Nursia;
 #endregion
 
 namespace RacingGame.Graphics
@@ -174,10 +175,10 @@ namespace RacingGame.Graphics
 		public Texture(string setFilename, bool premultiplyAlpha = true)
 		{
 			if (alphaSprite == null)
-				alphaSprite = new SpriteBatch(BaseGame.Device);
+				alphaSprite = new SpriteBatch(Nrs.GraphicsDevice);
 
 			if (additiveSprite == null)
-				additiveSprite = new SpriteBatch(BaseGame.Device);
+				additiveSprite = new SpriteBatch(Nrs.GraphicsDevice);
 
 			if (String.IsNullOrEmpty(setFilename))
 				throw new ArgumentNullException("setFilename",
@@ -187,7 +188,7 @@ namespace RacingGame.Graphics
 			string fullFilename = $"textures/{setFilename}";
 
 			// Try loading as 2d texture
-			internalXnaTexture = BaseGame.Content.LoadTexture2D(BaseGame.Device, fullFilename, premultiplyAlpha);
+			internalXnaTexture = RacingGame.Assets.LoadTexture2D(Nrs.GraphicsDevice, fullFilename, premultiplyAlpha);
 
 			// Get info from the texture directly.
 			texWidth = internalXnaTexture.Width;
@@ -216,10 +217,10 @@ namespace RacingGame.Graphics
 		public Texture(Texture2D tex)
 		{
 			if (alphaSprite == null)
-				alphaSprite = new SpriteBatch(BaseGame.Device);
+				alphaSprite = new SpriteBatch(Nrs.GraphicsDevice);
 
 			if (additiveSprite == null)
-				additiveSprite = new SpriteBatch(BaseGame.Device);
+				additiveSprite = new SpriteBatch(Nrs.GraphicsDevice);
 
 			if (tex == null)
 				throw new ArgumentNullException("tex");

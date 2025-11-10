@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using RacingGame.Helpers;
+using Nursia;
 #endregion
 
 namespace RacingGame.Graphics
@@ -194,7 +195,7 @@ namespace RacingGame.Graphics
 		public TextureFont()
 		{
 			fontTexture = new Texture(GameFontFilename);
-			fontSprite = new SpriteBatch(BaseGame.Device);
+			fontSprite = new SpriteBatch(Nrs.GraphicsDevice);
 		}
 		#endregion
 

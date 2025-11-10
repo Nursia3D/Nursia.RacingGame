@@ -1,6 +1,6 @@
 #region File Description
 //-----------------------------------------------------------------------------
-// CarPhysics.cs
+// Player.cs
 //
 // Microsoft XNA Community Game Platform
 // Copyright (C) Microsoft Corporation. All rights reserved.
@@ -35,7 +35,7 @@ namespace RacingGame.GameLogic
 	/// This way we can easily access everything from the Player class.
 	/// </summary>
 	/// <returns>Base player</returns>
-	public class CarPhysics : BasePlayer
+	partial class Player
 	{
 		#region Constants
 		/// <summary>
@@ -407,31 +407,6 @@ namespace RacingGame.GameLogic
 		}
 		#endregion
 
-		#region Constructor
-		/// <summary>
-		/// Create car physics controller
-		/// </summary>
-		/// <param name="setCarPosition">Set car position</param>
-		public CarPhysics(Vector3 setCarPosition)
-		{
-			SetCarPosition(setCarPosition,
-				new Vector3(0, 1, 0), new Vector3(0, 0, 1));
-		}
-
-		/// <summary>
-		/// Create car physics controller
-		/// </summary>
-		/// <param name="setCarPosition">Set car position</param>
-		/// <param name="setDirection">Set direction</param>
-		/// <param name="setUp">Set up</param>
-		public CarPhysics(Vector3 setCarPosition,
-			Vector3 setDirection,
-			Vector3 setUp)
-		{
-			SetCarPosition(setCarPosition, setDirection, setUp);
-		}
-		#endregion
-
 		#region SetCarPosition
 		/// <summary>
 		/// Set car position
@@ -456,26 +431,14 @@ namespace RacingGame.GameLogic
 		/// Reset all player entries for restarting a game, just resets the
 		/// car speed here.
 		/// </summary>
-		public override void Reset()
+		public void ResetPlayer()
 		{
-			base.Reset();
 			speed = 0;
 			carForce = Vector3.Zero;
 			trackSegmentNumber = 0;
 			trackSegmentPercent = 0;
 		}
 
-		/// <summary>
-		/// Clear variables for game over
-		/// </summary>
-		public override void ClearVariablesForGameOver()
-		{
-			base.ClearVariablesForGameOver();
-			speed = 0;
-			carForce = Vector3.Zero;
-			trackSegmentNumber = 0;
-			trackSegmentPercent = 0;
-		}
 		#endregion
 
 		#region Update
@@ -484,12 +447,10 @@ namespace RacingGame.GameLogic
 		/// <summary>
 		/// Update game logic for our car.
 		/// </summary>
-		public override void Update()
+		public void UpdatePlayer(GameTime gameTime)
 		{
-			base.Update();
-
 			// Don't use the car position and car handling if in free camera mode.
-			if (RacingGameManager.Player.FreeCamera)
+			if (FreeCamera)
 				return;
 
 			// Only allow control if zommed in, use carOnGround as helper
@@ -752,7 +713,7 @@ namespace RacingGame.GameLogic
 					if (brakeType == Sound.Sounds.BrakeCurveMajor ||
 						brakeType == Sound.Sounds.BrakeMajor)
 					{
-						RacingGameManager.Landscape.AddBrakeTrack(this);
+						_landscape.AddBrakeTrack(this);
 					}
 
 					// And play sound for braking
@@ -783,18 +744,18 @@ namespace RacingGame.GameLogic
 			#region Update track position and handle physics
 			int oldTrackSegmentNumber = trackSegmentNumber;
 			// Find out where we currently are on the track.
-			RacingGameManager.Landscape.UpdateCarTrackPosition(
+			_landscape.UpdateCarTrackPosition(
 				carPos, ref trackSegmentNumber, ref trackSegmentPercent);
 			// Was the track segment changed?
 			if (trackSegmentNumber != oldTrackSegmentNumber &&
 				// And we in game?
-				RacingGameManager.InGame && !GameOver)
+				RacingGame.InGame && !GameOver)
 			{
 				// Was this the start? Did we finish a lap?
 				if (trackSegmentNumber == 0 &&
 					// Ignore if we missed one checkpoint.
-					RacingGameManager.Landscape.NewReplay.CheckpointTimes.Count >=
-					RacingGameManager.Landscape.CheckpointSegmentPositions.Count - 1)
+					_landscape.NewReplay.CheckpointTimes.Count >=
+					_landscape.CheckpointSegmentPositions.Count - 1)
 				{
 					// Show time we made for this lap
 					BaseGame.UI.AddTimeFadeupEffect((int)GameTimeMilliseconds,
@@ -807,19 +768,19 @@ namespace RacingGame.GameLogic
 				{
 					// Always only check for the next checkpoint
 					int num =
-						RacingGameManager.Landscape.NewReplay.CheckpointTimes.Count;
+						_landscape.NewReplay.CheckpointTimes.Count;
 					if (ZoomInTime <= 0 && // Do not check before race starts
 						num <
-						RacingGameManager.Landscape.CheckpointSegmentPositions.Count &&
-						RacingGameManager.Landscape.CheckpointSegmentPositions[num] >
+						_landscape.CheckpointSegmentPositions.Count &&
+						_landscape.CheckpointSegmentPositions[num] >
 						oldTrackSegmentNumber &&
-						RacingGameManager.Landscape.CheckpointSegmentPositions[num] <=
+						_landscape.CheckpointSegmentPositions[num] <=
 						trackSegmentNumber)
 					{
 						// We passed that checkpoint, show time
 						// Show improvements of time stored in best replay.
 						int differenceMs =
-							RacingGameManager.Landscape.CompareCheckpointTime(num);
+							_landscape.CompareCheckpointTime(num);
 
 						if (differenceMs < 0)
 							Sound.Play(Sound.Sounds.CheckpointBetter);
@@ -833,8 +794,8 @@ namespace RacingGame.GameLogic
 							UIRenderer.TimeFadeupMode.Plus);
 
 						// Add this checkpoint time to the current replay
-						RacingGameManager.Landscape.NewReplay.CheckpointTimes.Add(
-							RacingGameManager.Player.GameTimeMilliseconds / 1000.0f);
+						_landscape.NewReplay.CheckpointTimes.Add(
+							GameTimeMilliseconds / 1000.0f);
 					}
 				}
 			}
@@ -842,7 +803,7 @@ namespace RacingGame.GameLogic
 			// And get the TrackMatrix and track values at this location.
 			float roadWidth, nextRoadWidth;
 			Matrix trackMatrix =
-				RacingGameManager.Landscape.GetTrackPositionMatrix(
+				_landscape.GetTrackPositionMatrix(
 				trackSegmentNumber, trackSegmentPercent,
 				out roadWidth, out nextRoadWidth);
 
@@ -854,7 +815,7 @@ namespace RacingGame.GameLogic
 
 			// Set up the ground and guardrail boundings for the physics calculation.
 			Vector3 trackPos = trackMatrix.Translation;
-			RacingGameManager.Player.SetGroundPlaneAndGuardRails(
+			SetGroundPlaneAndGuardRails(
 				trackPos, trackMatrix.Up,
 				// Construct our guardrail positions for the collision testing
 				trackPos - trackMatrix.Right *
@@ -867,7 +828,7 @@ namespace RacingGame.GameLogic
 				trackPos + trackMatrix.Right *
 				(nextRoadWidth / 2 - GuardRail.InsideRoadDistance / 2) +
 				trackMatrix.Forward);
-			carRenderMatrix = RacingGameManager.Player.UpdateCarMatrixAndCamera();
+			carRenderMatrix = UpdateCarMatrixAndCamera(gameTime);
 
 			// Finally check for collisions with the guard rails.
 			// Also handle gravity.
@@ -892,8 +853,10 @@ namespace RacingGame.GameLogic
 		public void ApplyGravityAndCheckForCollisions()
 		{
 			// Don't do it in the menu
-			if (RacingGameManager.InMenu)
+			if (!RacingGame.InGame)
+			{
 				return;
+			}
 
 			// Calc normals for the guard rail with help of the next guard rail
 			// position and the ground normal.
@@ -989,7 +952,7 @@ namespace RacingGame.GameLogic
 							if (viewDistance > 0.75f)
 								viewDistance -= 0.05f;
 						}
-						ChaseCamera.WobbelCamera(0.00075f * speed);
+						WobbelCamera(0.00075f * speed);
 					}
 
 					// If 90-45 degrees (in either direction), make frontal crash
@@ -1004,7 +967,7 @@ namespace RacingGame.GameLogic
 						Sound.PlayCrashSound(true);
 
 						// Shake camera
-						ChaseCamera.WobbelCamera(0.005f * speed);
+						WobbelCamera(0.005f * speed);
 
 						// Just stop car!
 						speed = 0;
@@ -1061,7 +1024,7 @@ namespace RacingGame.GameLogic
 							if (viewDistance > 0.75f)
 								viewDistance -= 0.05f;
 						}
-						ChaseCamera.WobbelCamera(0.00075f * speed);
+						WobbelCamera(0.00075f * speed);
 					}
 
 					// If 90-45 degrees (in either direction), make frontal crash
@@ -1076,7 +1039,7 @@ namespace RacingGame.GameLogic
 						Sound.PlayCrashSound(true);
 
 						// Shake camera
-						ChaseCamera.WobbelCamera(0.005f * speed);
+						WobbelCamera(0.005f * speed);
 
 						// Just stop car!
 						speed = 0;
@@ -1185,7 +1148,7 @@ namespace RacingGame.GameLogic
 		/// <summary>
 		/// Update car matrix and camera
 		/// </summary>
-		public Matrix UpdateCarMatrixAndCamera()
+		public Matrix UpdateCarMatrixAndCamera(GameTime gameTime)
 		{
 			// Get car matrix with help of the current car position, dir and up
 			Matrix carMatrix = Matrix.Identity;
@@ -1197,8 +1160,7 @@ namespace RacingGame.GameLogic
 			// Change distance based on our speed
 			float chaseCamDistance =
 				(4.25f + 9.75f * speed / maxSpeed) * viewDistance;
-			if (RacingGameManager.InMenu == false &&
-				ZoomInTime > 1500)
+			if (RacingGame.InGame && ZoomInTime > 1500)
 			{
 				// Calculate zooming in camera position
 				Vector3 camPos =
@@ -1211,36 +1173,35 @@ namespace RacingGame.GameLogic
 						/ ((float)StartGameZoomTimeMilliseconds)) * 200.0f);
 
 				// Make sure we don't interpolate at the first time
-				if (ZoomInTime - BaseGame.ElapsedTimeThisFrameInMilliseconds >= 3000)
-					RacingGameManager.Player.SetCameraPosition(camPos);
+				if (ZoomInTime - (float)gameTime.ElapsedGameTime.TotalMilliseconds >= 3000)
+					SetCameraPosition(camPos);
 				else
-					RacingGameManager.Player.InterpolateCameraPosition(camPos);
+					InterpolateCameraPosition(camPos);
 			}
-			else if (RacingGameManager.Player.FreeCamera)
-				RacingGameManager.Player.InterpolateCameraPosition(
+			else if (FreeCamera)
+				InterpolateCameraPosition(
 					carPos + carUp * CarHeight +
 					carMatrix.Forward * chaseCamDistance -
 					carMatrix.Up * chaseCamDistance / (viewDistance + 6.0f) -
 					carMatrix.Up * 1.0f);
-			else if (RacingGameManager.InMenu &&
-				BaseGame.TotalTimeMilliseconds < 100)
+			else if (!RacingGame.InGame && (float)gameTime.TotalGameTime.TotalMilliseconds < 100)
 				// No interpolation in menu, just set it (at least for the first ms)
-				RacingGameManager.Player.SetCameraPosition(
+				SetCameraPosition(
 					carPos + carUp * CarHeight +
 					carMatrix.Forward * chaseCamDistance -
 					carMatrix.Up * 0.6f);
 			else
-				RacingGameManager.Player.InterpolateCameraPosition(
+				InterpolateCameraPosition(
 					carPos + carMatrix.Up * CarHeight +
 					carMatrix.Forward * chaseCamDistance / 1.125f -
 					carMatrix.Up * 0.8f);
 
 			// Save this carMatrix into the current replay every time the
 			// replay interval passes.
-			if (RacingGameManager.Player.GameTimeMilliseconds >
-				RacingGameManager.Landscape.NewReplay.NumberOfTrackMatrices *
+			if (GameTimeMilliseconds >
+				_landscape.NewReplay.NumberOfTrackMatrices *
 				Replay.TrackMatrixIntervals * 1000.0f)
-				RacingGameManager.Landscape.NewReplay.AddCarMatrix(carMatrix);
+				_landscape.NewReplay.AddCarMatrix(carMatrix);
 
 			// For rendering rotate car to stay correctly on the road
 			carMatrix =

@@ -14,6 +14,7 @@ using RacingGame.Graphics;
 using Texture = RacingGame.Graphics.Texture;
 using XnaTexture = Microsoft.Xna.Framework.Graphics.Texture2D;
 using Microsoft.Xna.Framework;
+using Nursia;
 #endregion
 
 namespace RacingGame.Shaders
@@ -217,7 +218,7 @@ namespace RacingGame.Shaders
 
 			int MultisampleCount = 2;
 
-			if (BaseGame.Device.PresentationParameters.BackBufferHeight == 720)
+			if (Nrs.GraphicsDevice.PresentationParameters.BackBufferHeight == 720)
 			{
 				MultisampleCount = 4;
 			}
@@ -229,7 +230,7 @@ namespace RacingGame.Shaders
 			}
 
 
-			BaseGame.Device.Adapter.QueryRenderTargetFormat(BaseGame.Device.GraphicsProfile,
+			Nrs.GraphicsDevice.Adapter.QueryRenderTargetFormat(Nrs.GraphicsDevice.GraphicsProfile,
 				SurfaceFormat.Rgba64, BaseGame.BackBufferDepthFormat, MultisampleCount, out outSF, out outDF, out outMSC);
 
 			if (sizeType == SizeType.ShadowMap)
@@ -237,7 +238,7 @@ namespace RacingGame.Shaders
 
 			// Create render target of specified size.
 			renderTarget = new RenderTarget2D(
-				BaseGame.Device,
+				Nrs.GraphicsDevice,
 				texWidth, texHeight, false,
 					outSF, outDF, outMSC, RenderTargetUsage.DiscardContents);
 
@@ -258,7 +259,7 @@ namespace RacingGame.Shaders
 				renderTarget == null)
 				return;
 
-			BaseGame.Device.Clear(
+			Nrs.GraphicsDevice.Clear(
 				ClearOptions.Target | ClearOptions.DepthBuffer,
 				clearColor, 1.0f, 0);
 		}
@@ -304,8 +305,8 @@ namespace RacingGame.Shaders
 
 			alreadyResolved = true;
 			// fix
-			//BaseGame.Device.ResolveRenderTarget(0);
-			BaseGame.Device.SetRenderTarget(null);
+			//Nrs.GraphicsDevice.ResolveRenderTarget(0);
+			Nrs.GraphicsDevice.SetRenderTarget(null);
 		}
 		#endregion
 	}

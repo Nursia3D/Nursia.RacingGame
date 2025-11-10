@@ -93,11 +93,6 @@ namespace RacingGame.Landscapes
 		/// </summary>
 		LandscapeObject startLightObject = null;
 
-		public Landscape()
-		{
-
-		}
-
 		/// <summary>
 		/// Replace start light object, 0=red, 1=yellow, 2=green.
 		/// </summary>
@@ -530,9 +525,9 @@ namespace RacingGame.Landscapes
 		/// from the RacingGame main class!
 		/// </summary>
 		/// <param name="setLevel">Level we want to load</param>
-		internal Landscape(RacingGameManager.Level setLevel)
+		public Landscape(RacingGameManager.Level setLevel)
 		{
-			_terrainNode = (TerrainNode)BaseGame.Content.LoadSceneNode("Scenes/Landscape.scene");
+			_terrainNode = (TerrainNode)RacingGame.Assets.LoadSceneNode("Scenes/Landscape.scene");
 
 			_terrainNode.Translation = new Vector3(1280, 1280, 0);
 			_terrainNode.Rotation = new Vector3(90, 0, 0);
@@ -552,7 +547,7 @@ namespace RacingGame.Landscapes
 				CastsShadows = false
 			};
 
-			material.Load(BaseGame.Content);
+			material.Load(RacingGame.Assets);
 
 			_brakesNode = new RenderCallbackNode
 			{
@@ -584,9 +579,6 @@ namespace RacingGame.Landscapes
 			// Kill brake tracks
 			brakeTracksVertices.Clear();
 			brakeTracksVerticesArray = null;
-
-			// Set car at start pos
-			SetCarToStartPosition();
 
 			// Begin game with red start light
 			startLightObject.ChangeModel(starLightsModels[0], ModelUtils.LoadModel(starLightsModels[0]));
@@ -622,9 +614,9 @@ namespace RacingGame.Landscapes
 		/// <summary>
 		/// Set car to start pos
 		/// </summary>
-		public void SetCarToStartPosition()
+		public void SetCarToStartPosition(Player player)
 		{
-			RacingGameManager.Player.SetCarPosition(
+			player.SetCarPosition(
 				track.StartPosition, track.StartDirection, track.StartUpVector);
 			// Camera is set in zooming in method of the Player class.
 		}
@@ -709,7 +701,7 @@ namespace RacingGame.Landscapes
 		/// <param name="position">Position</param>
 		/// <param name="dir">Dir vector</param>
 		/// <param name="right">Right vector</param>
-		public void AddBrakeTrack(CarPhysics car)
+		public void AddBrakeTrack(Player car)
 		{
 			Vector3 position = car.CarPosition + car.CarDirection * 1.25f;
 
@@ -779,7 +771,7 @@ namespace RacingGame.Landscapes
 				return;
 
 			// Draw the vertices
-			BaseGame.Device.DrawUserPrimitives(PrimitiveType.TriangleList,
+			Nrs.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList,
 				brakeTracksVerticesArray, 0, brakeTracksVerticesArray.Length / 3);
 		}
 		#endregion

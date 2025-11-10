@@ -36,11 +36,11 @@ namespace RacingGame.GameScreens
 		private static float[] CarTypeMaxSpeed = new float[]
 			{
                 // Car 1 (orange stripes on top)
-                CarPhysics.DefaultMaxSpeed * 1.05f, // 288 mph
+                Player.DefaultMaxSpeed * 1.05f, // 288 mph
                 // Car 2 (blue stripes on side)
-                CarPhysics.DefaultMaxSpeed, // 275 mph
+                Player.DefaultMaxSpeed, // 275 mph
                 // Car 3 (Just white)
-                CarPhysics.DefaultMaxSpeed * 0.88f, // 240 mph
+                Player.DefaultMaxSpeed * 0.88f, // 240 mph
             };
 
 		/// <summary>
@@ -49,11 +49,11 @@ namespace RacingGame.GameScreens
 		private static float[] CarTypeMass = new float[]
 			{
                 // Car 1 (orange stripes on top)
-                CarPhysics.DefaultCarMass * 1.015f, // 1015 kg
+                Player.DefaultCarMass * 1.015f, // 1015 kg
                 // Car 2 (blue stripes on side)
-                CarPhysics.DefaultCarMass * 1.175f, // 1175 kg
+                Player.DefaultCarMass * 1.175f, // 1175 kg
                 // Car 3 (Just white)
-                CarPhysics.DefaultCarMass * 0.875f, // 875 kg
+                Player.DefaultCarMass * 0.875f, // 875 kg
             };
 
 		/// <summary>
@@ -62,11 +62,11 @@ namespace RacingGame.GameScreens
 		private static float[] CarTypeMaxAcceleration = new float[]
 			{
                 // Car 1 (orange stripes on top)
-                CarPhysics.DefaultMaxAccelerationPerSec * 0.85f, // 4 m/s^2
+                Player.DefaultMaxAccelerationPerSec * 0.85f, // 4 m/s^2
                 // Car 2 (blue stripes on side)
-                CarPhysics.DefaultMaxAccelerationPerSec * 1.2f, // 6 m/s^2
+                Player.DefaultMaxAccelerationPerSec * 1.2f, // 6 m/s^2
                 // Car 3 (Just white)
-                CarPhysics.DefaultMaxAccelerationPerSec, // 5 m/s^2
+                Player.DefaultMaxAccelerationPerSec, // 5 m/s^2
             };
 		// Rest of car variables is automatically calculated below!
 		#endregion
@@ -144,7 +144,7 @@ namespace RacingGame.GameScreens
 
 			// Show car maxSpeed, Acceleration and Mass values.
 			// Also show braking, friction and engine values based on that.
-			CarPhysics.SetCarVariablesForCarType(
+			Player.SetCarVariablesForCarType(
 				CarTypeMaxSpeed[Globals.CarNumber],
 				CarTypeMass[Globals.CarNumber],
 				CarTypeMaxAcceleration[Globals.CarNumber]);
@@ -159,15 +159,15 @@ namespace RacingGame.GameScreens
 			float maxSpeed =
 				-1.5f + 2.45f *
 				(CarTypeMaxSpeed[Globals.CarNumber] /
-				CarPhysics.DefaultMaxSpeed);
+				Player.DefaultMaxSpeed);
 			float acceleration =
 				-1.25f + 1.85f *
 				(CarTypeMaxAcceleration[Globals.CarNumber] /
-				CarPhysics.DefaultMaxAccelerationPerSec);
+				Player.DefaultMaxAccelerationPerSec);
 			float mass =
 				-0.65f + 1.5f *
 				(CarTypeMass[Globals.CarNumber] /
-				CarPhysics.DefaultCarMass);
+				Player.DefaultCarMass);
 			float braking =
 				-0.2f + acceleration - mass + maxSpeed;
 			float friction =
@@ -181,7 +181,7 @@ namespace RacingGame.GameScreens
 				BaseGame.XToRes(1024 - 258), BaseGame.YToRes(190),
 				"Max Speed: " +
 				(int)(CarTypeMaxSpeed[Globals.CarNumber] /
-				CarPhysics.MphToMeterPerSec) + "mph",
+				Player.MphToMeterPerSec) + "mph",
 				maxSpeed);
 			ShowCarPropertyBar(
 				BaseGame.XToRes(1024 - 258), BaseGame.YToRes(235),

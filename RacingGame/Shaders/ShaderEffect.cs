@@ -19,6 +19,7 @@ using RacingGame.Helpers;
 using Texture = RacingGame.Graphics.Texture;
 using XnaTexture = Microsoft.Xna.Framework.Graphics.Texture;
 using AssetManagementBase;
+using Nursia;
 #endregion
 
 namespace RacingGame.Shaders
@@ -559,7 +560,7 @@ namespace RacingGame.Shaders
 			"Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
 		public ShaderEffect(string shaderName)
 		{
-			if (BaseGame.Device == null)
+			if (Nrs.GraphicsDevice == null)
 				throw new InvalidOperationException(
 					"XNA device is not initialized, can't create ShaderEffect.");
 
@@ -601,7 +602,7 @@ namespace RacingGame.Shaders
 		public void Reload()
 		{
 			// Load shader
-			effect = BaseGame.Content.LoadEffect2($"Shaders/{shaderContentName}.efb");
+			effect = RacingGame.Assets.LoadEffect2($"Shaders/{shaderContentName}.efb");
 
 			// Reset and get all avialable parameters.
 			// This is especially important for derived classes.

@@ -1,6 +1,6 @@
 ﻿using AssetManagementBase;
 using Microsoft.Xna.Framework.Graphics;
-using RacingGame.Graphics;
+using Nursia;
 using System.IO;
 
 namespace RacingGame
@@ -18,7 +18,7 @@ namespace RacingGame
 			var path = folder + "/MonoGameDX/" + file;
 #endif
 
-			return manager.LoadEffect(BaseGame.Device, path);
+			return manager.LoadEffect(Nrs.GraphicsDevice, path);
 		}
 	}
 }

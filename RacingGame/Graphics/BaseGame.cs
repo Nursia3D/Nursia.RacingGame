@@ -22,6 +22,7 @@ using RacingGame.GameScreens;
 using AssetManagementBase;
 using System.IO;
 using RacingGame.Utilities;
+using Nursia;
 #endregion
 
 namespace RacingGame.Graphics
@@ -65,11 +66,6 @@ namespace RacingGame.Graphics
 		/// the GraphicsDevice.
 		/// </summary>
 		public static GraphicsDeviceManager graphicsManager = null;
-
-		/// <summary>
-		/// Content manager
-		/// </summary>
-		protected static AssetManager content = null;
 
 		/// <summary>
 		/// UI Renderer helper class for all 2d rendering.
@@ -213,7 +209,7 @@ namespace RacingGame.Graphics
 		/// </summary>
 		internal static void CheckOptionsAndPSVersion()
 		{
-			GraphicsDevice device = Device;
+			GraphicsDevice device = Nrs.GraphicsDevice;
 
 			if (device == null)
 				throw new InvalidOperationException("Device is not created yet!");
@@ -299,20 +295,6 @@ namespace RacingGame.Graphics
 
 			mustApplyDeviceChanges = true;
 #endif
-		}
-		#endregion
-
-		#region Content manager
-		/// <summary>
-		/// Content
-		/// </summary>
-		/// <returns>Content manager</returns>
-		public new static AssetManager Content
-		{
-			get
-			{
-				return content;
-			}
 		}
 		#endregion
 
@@ -985,8 +967,6 @@ namespace RacingGame.Graphics
 			this.IsFixedTimeStep = false;
 
 			// Init content manager
-			var contentPath = Path.Combine(PathUtils.ExecutingAssemblyDirectory, "Assets");
-			content = AssetManager.CreateFileAssetManager(contentPath);
 			base.Content.RootDirectory = String.Empty;
 
 			// Update windows title (used for unit testing)
@@ -1090,16 +1070,16 @@ namespace RacingGame.Graphics
 
 			// Re-Set device
 			// Restore z buffer state
-			BaseGame.Device.DepthStencilState = DepthStencilState.Default;
+			Nrs.GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 			// Set u/v addressing back to wrap
-			BaseGame.Device.SamplerStates[0] = SamplerState.LinearWrap;
+			Nrs.GraphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;
 			// Restore normal alpha blending
 			BaseGame.SetCurrentAlphaMode(BaseGame.AlphaMode.Default);
 
 			//TODO: AlphaTestEffect
 			// Set 128 and greate alpha compare for Model.Render
-			//BaseGame.Device.RenderState.ReferenceAlpha = 128;
-			//BaseGame.Device.RenderState.AlphaFunction = CompareFunction.Greater;
+			//Nrs.GraphicsDevice.RenderState.ReferenceAlpha = 128;
+			//Nrs.GraphicsDevice.RenderState.AlphaFunction = CompareFunction.Greater;
 
 			// Recreate all render-targets
 			foreach (RenderToTexture renderToTexture in remRenderToTextures)

@@ -24,13 +24,13 @@ namespace RacingGame
 		public static NursiaModelNode CreateCar(int number)
 		{
 			var textureName = _textures[number];
-			var texture = BaseGame.Content.LoadTexture2D(Nrs.GraphicsDevice, $"Textures/{textureName}.tga");
+			var texture = RacingGame.Assets.LoadTexture2D(Nrs.GraphicsDevice, $"Textures/{textureName}.tga");
 
-			var result = (NursiaModelNode)BaseGame.Content.LoadSceneNode("Scenes/Car.scene");
+			var result = (NursiaModelNode)RacingGame.Assets.LoadSceneNode("Scenes/Car.scene");
 			var wheelsBoneIndices = (from b in result.Model.Bones where b.Mesh != null && b.Mesh.MeshParts.Count == 2 select b.Index).ToArray();
 
 			// Add wheels' turning
-			result.PreRender += () =>
+/*			result.PreRender += () =>
 			{
 				var wheelNumber = 0;
 
@@ -47,7 +47,7 @@ namespace RacingGame
 					result.ModelInstance.SetBoneLocalTransform(idx, rotationMatrix);
 				}
 			};
-
+*/
 			// Set texture
 			for (var i = 0; i < result.Materials.Length; ++i)
 			{

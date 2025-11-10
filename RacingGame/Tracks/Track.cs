@@ -252,14 +252,8 @@ namespace RacingGame.Tracks
 			}
 
 			// fix
-			//roadVb = new VertexBuffer(
-			//    BaseGame.Device,
-			//    typeof(TangentVertex),
-			//    roadVertices.Length,
-			//    ResourceUsage.WriteOnly,
-			//    ResourceManagementMode.Automatic);
 			var roadVb = new VertexBuffer(
-				BaseGame.Device,
+				Nrs.GraphicsDevice,
 				typeof(TangentVertex),
 				roadVertices.Length,
 				BufferUsage.WriteOnly);
@@ -302,13 +296,13 @@ namespace RacingGame.Tracks
 			// Set road back index buffer
 			// fix
 			//roadIb = new IndexBuffer(
-			//    BaseGame.Device,
+			//    Nrs.GraphicsDevice,
 			//    typeof(int),
 			//    indices.Length,
 			//    ResourceUsage.WriteOnly,
 			//    ResourceManagementMode.Automatic);
 			var roadIb = new IndexBuffer(
-				BaseGame.Device,
+				Nrs.GraphicsDevice,
 				typeof(int),
 				indices.Length,
 				BufferUsage.WriteOnly);
@@ -323,7 +317,7 @@ namespace RacingGame.Tracks
 				NormalTexturePath = "Textures/RoadNormal.tga",
 			};
 
-			material.Load(BaseGame.Content);
+			material.Load(RacingGame.Assets);
 
 			var meshPart = new DrMeshPart(roadVb, roadIb, roadVertices.CalculateBoundingBox());
 
@@ -372,13 +366,13 @@ namespace RacingGame.Tracks
 			// Set road back vertex buffer
 			// fix
 			//roadBackVb = new VertexBuffer(
-			//    BaseGame.Device,
+			//    Nrs.GraphicsDevice,
 			//    typeof(TangentVertex),
 			//    roadBackVertices.Length,
 			//    ResourceUsage.WriteOnly,
 			//    ResourceManagementMode.Automatic);
 			var roadBackVb = new VertexBuffer(
-				BaseGame.Device,
+				Nrs.GraphicsDevice,
 				typeof(TangentVertex),
 				roadBackVertices.Length,
 				BufferUsage.WriteOnly);
@@ -421,13 +415,13 @@ namespace RacingGame.Tracks
 			// Set road back index buffer
 			// fix
 			//roadBackIb = new IndexBuffer(
-			//    BaseGame.Device,
+			//    Nrs.GraphicsDevice,
 			//    typeof(int),
 			//    backIndices.Length,
 			//    ResourceUsage.WriteOnly,
 			//    ResourceManagementMode.Automatic);
 			var roadBackIb = new IndexBuffer(
-				BaseGame.Device,
+				Nrs.GraphicsDevice,
 				typeof(int),
 				backIndices.Length,
 				BufferUsage.WriteOnly);
@@ -442,7 +436,7 @@ namespace RacingGame.Tracks
 				NormalTexturePath = "Textures/RoadBackNormal.tga",
 			};
 
-			material.Load(BaseGame.Content);
+			material.Load(RacingGame.Assets);
 
 			var meshPart = new DrMeshPart(roadBackVb, roadBackIb, roadBackVertices.CalculateBoundingBox());
 
@@ -519,7 +513,7 @@ namespace RacingGame.Tracks
 			}
 
 			var roadTunnelVb = new VertexBuffer(
-			   BaseGame.Device,
+			   Nrs.GraphicsDevice,
 			   typeof(TangentVertex),
 			   roadTunnelVertices.Length,
 			   BufferUsage.WriteOnly);
@@ -577,7 +571,7 @@ namespace RacingGame.Tracks
 
 			// Set road back index buffer
 			var roadTunnelIb = new IndexBuffer(
-				BaseGame.Device,
+				Nrs.GraphicsDevice,
 				typeof(int),
 				roadTunnelIndices.Length,
 				BufferUsage.WriteOnly);
@@ -594,7 +588,7 @@ namespace RacingGame.Tracks
 				RasterizerState = RasterizerState.CullNone
 			};
 
-			material.Load(BaseGame.Content);
+			material.Load(RacingGame.Assets);
 
 			var meshPart = new DrMeshPart(roadTunnelVb, roadTunnelIb, roadTunnelVertices.CalculateBoundingBox());
 
@@ -1099,9 +1093,9 @@ namespace RacingGame.Tracks
 				/// </summary>
 				private void RenderRoadVertices()
 				{
-					BaseGame.Device.SetVertexBuffer(roadVb);
-					BaseGame.Device.Indices = roadIb;
-					BaseGame.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList,
+					Nrs.GraphicsDevice.SetVertexBuffer(roadVb);
+					Nrs.GraphicsDevice.Indices = roadIb;
+					Nrs.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList,
 						0, 0, points.Count * 5,
 						0, (points.Count - 1) * 8);
 				}
@@ -1111,9 +1105,9 @@ namespace RacingGame.Tracks
 				/// </summary>
 				private void RenderRoadBackVertices()
 				{
-					BaseGame.Device.SetVertexBuffer(roadBackVb);
-					BaseGame.Device.Indices = roadBackIb;
-					BaseGame.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList,
+					Nrs.GraphicsDevice.SetVertexBuffer(roadBackVb);
+					Nrs.GraphicsDevice.Indices = roadBackIb;
+					Nrs.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList,
 						0, 0, points.Count * 4,
 						0, (points.Count - 1) * 6);
 				}*/

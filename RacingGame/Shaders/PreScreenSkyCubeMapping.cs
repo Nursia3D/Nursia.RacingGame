@@ -22,6 +22,7 @@ using XnaModel = Microsoft.Xna.Framework.Graphics.Model;
 using RacingGame;
 using AssetManagementBase;
 using DigitalRiseModel;
+using Nursia;
 #endregion
 
 namespace RacingGame.Shaders
@@ -74,7 +75,7 @@ namespace RacingGame.Shaders
 		public PreScreenSkyCubeMapping()
 			: base(Filename)
 		{
-			cube = BaseGame.Content.LoadModel(BaseGame.Device, @"Models\Cube.glb");
+			cube = RacingGame.Assets.LoadModel(Nrs.GraphicsDevice, @"Models\Cube.glb");
 		}
 		#endregion
 
@@ -87,8 +88,8 @@ namespace RacingGame.Shaders
 			base.GetParameters();
 
 			// Load and set cube map texture
-			skyCubeMapTexture = BaseGame.Content.LoadTextureCube(
-				BaseGame.Device,
+			skyCubeMapTexture = RacingGame.Assets.LoadTextureCube(
+				Nrs.GraphicsDevice,
 				$"textures/{SkyCubeMapFilename}.dds");
 			diffuseTexture.SetValue(skyCubeMapTexture);
 
@@ -108,11 +109,11 @@ namespace RacingGame.Shaders
 				return;
 
 			// Don't use or write to the z buffer
-			BaseGame.Device.DepthStencilState = DepthStencilState.None;
-			BaseGame.Device.RasterizerState = RasterizerState.CullNone;
+			Nrs.GraphicsDevice.DepthStencilState = DepthStencilState.None;
+			Nrs.GraphicsDevice.RasterizerState = RasterizerState.CullNone;
 
 			// Also don't use any kind of blending.
-			BaseGame.Device.BlendState = BlendState.Opaque;
+			Nrs.GraphicsDevice.BlendState = BlendState.Opaque;
 
 			// Set effect parameters
 			AmbientColor = setSkyColor;
@@ -123,14 +124,14 @@ namespace RacingGame.Shaders
 			foreach (var pass in effect.CurrentTechnique.Passes)
 			{
 				pass.Apply();
-				cube.Meshes[0].MeshParts[0].Draw(BaseGame.Device);
+				cube.Meshes[0].MeshParts[0].Draw(Nrs.GraphicsDevice);
 			}
 
 			// Reset previous render states
-			BaseGame.Device.DepthStencilState = DepthStencilState.Default;
-			BaseGame.Device.RasterizerState = RasterizerState.CullCounterClockwise;
+			Nrs.GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+			Nrs.GraphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
 
-			BaseGame.Device.BlendState = BlendState.AlphaBlend;
+			Nrs.GraphicsDevice.BlendState = BlendState.AlphaBlend;
 		}
 
 		/// <summary>

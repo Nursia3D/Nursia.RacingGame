@@ -68,7 +68,7 @@ namespace RacingGame.Utilities
 
 		public static void Draw(this DrMesh mesh)
 		{
-			var graphicsDevice = BaseGame.Device;
+			var graphicsDevice = Nrs.GraphicsDevice;
 
 			for (int i = 0; i < mesh.MeshParts.Count; i++)
 			{
@@ -109,7 +109,7 @@ namespace RacingGame.Utilities
 
 		public static SceneNode LoadScene(string name)
 		{
-			var result = BaseGame.Content.LoadSceneNode($"Scenes/{name}.scene");
+			var result = RacingGame.Assets.LoadSceneNode($"Scenes/{name}.scene");
 
 			// Setup animations
 			result.Iterate(n =>

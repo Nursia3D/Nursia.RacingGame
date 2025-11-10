@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
 
 namespace RacingGame
 {
@@ -39,5 +40,9 @@ namespace RacingGame
 			DefaultAmbientColor = new Color(40, 40, 40),
 			DefaultDiffuseColor = new Color(210, 210, 210),
 			DefaultSpecularColor = new Color(255, 255, 255);
+
+		public const float FieldOfViewInDegrees = 90.0f;
+		public const float NearPlane = 0.5f;
+		public const float FarPlane = 1750.0f;
 	}
 }

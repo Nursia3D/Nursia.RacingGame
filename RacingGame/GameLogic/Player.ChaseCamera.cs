@@ -26,7 +26,7 @@ namespace RacingGame.GameLogic
 	/// by the user input. This camera class is not controlled by the user,
 	/// its all automatic!
 	/// </summary>
-	public class ChaseCamera : CarPhysics
+	partial class Player
 	{
 		#region Variables
 		/// <summary>
@@ -192,51 +192,6 @@ namespace RacingGame.GameLogic
 				else
 					cameraMode = CameraMode.Default;
 			}
-		}
-		#endregion
-
-		#region Constructor
-		/// <summary>
-		/// Create chase camera. Sets the car position and the camera position,
-		/// which is then used to rotate around the car.
-		/// </summary>
-		/// <param name="setCarPosition">Set car position</param>
-		/// <param name="setDirection">Set direction</param>
-		/// <param name="setUp">Set up</param>
-		/// <param name="setCameraPos">Set camera pos</param>
-		public ChaseCamera(Vector3 setCarPosition, Vector3 setDirection,
-			Vector3 setUp, Vector3 setCameraPos)
-			: base(setCarPosition, setDirection, setUp)
-		{
-			// Set camera position and calculate rotation from look pos
-			SetCameraPosition(setCameraPos);
-		}
-
-		/// <summary>
-		/// Create chase camera. Sets the car position and the camera position,
-		/// which is then used to rotate around the car.
-		/// </summary>
-		/// <param name="setCarPosition">Set car position</param>
-		/// <param name="setCameraPos">Set camera pos</param>
-		public ChaseCamera(Vector3 setCarPosition, Vector3 setCameraPos)
-			: base(setCarPosition)
-		{
-			// Set camera position and calculate rotation from look pos
-			SetCameraPosition(setCameraPos);
-		}
-
-		/// <summary>
-		/// Create chase camera. Just sets the car position.
-		/// The chase camera is set behind it.
-		/// </summary>
-		/// <param name="setCarPosition">Set car position</param>
-		public ChaseCamera(Vector3 setCarPosition)
-			: base(setCarPosition)
-		{
-			// Set camera position and calculate rotation from look pos
-			SetCameraPosition(
-				//setCarPosition - new Vector3(0, 0.5f, 1.0f) * carDir);
-				setCarPosition + new Vector3(0, 10.0f, 25.0f));
 		}
 		#endregion
 
@@ -431,7 +386,7 @@ namespace RacingGame.GameLogic
 		/// <summary>
 		/// Update view matrix
 		/// </summary>
-		private void UpdateViewMatrix()
+		private void UpdateViewMatrix(GameTime gameTime)
 		{
 			cameraDistance = cameraDistance * 0.9f + wannaCameraDistance * 0.1f;
 
@@ -450,7 +405,7 @@ namespace RacingGame.GameLogic
 			// Is camera wobbeling?
 			if (cameraWobbelTimeoutMs > 0)
 			{
-				cameraWobbelTimeoutMs -= BaseGame.ElapsedTimeThisFrameInMilliseconds;
+				cameraWobbelTimeoutMs -= (float)gameTime.ElapsedGameTime.TotalMilliseconds;
 				if (cameraWobbelTimeoutMs < 0)
 					cameraWobbelTimeoutMs = 0;
 			}
@@ -479,18 +434,20 @@ namespace RacingGame.GameLogic
 		/// <summary>
 		/// Resets just the camera wobbel factor here.
 		/// </summary>
-		public override void Reset()
+		public void ResetChaseCamera()
 		{
-			base.Reset();
 			cameraWobbelFactor = 0;
 		}
 
 		/// <summary>
 		/// Clear variables for game over
 		/// </summary>
-		public override void ClearVariablesForGameOver()
+		public void ClearVariablesForGameOver()
 		{
-			base.ClearVariablesForGameOver();
+			speed = 0;
+			carForce = Vector3.Zero;
+			trackSegmentNumber = 0;
+			trackSegmentPercent = 0;
 			cameraWobbelFactor = 0;
 		}
 		#endregion
@@ -499,14 +456,12 @@ namespace RacingGame.GameLogic
 		/// <summary>
 		/// Update camera, should be called every frame to handle all the input.
 		/// </summary>
-		public override void Update()
+		public void UpdateChaseCamera(GameTime gameTime)
 		{
-			base.Update();
-
 			// Only allow control when zooming is finished.
 			HandleFreeCamera();
 
-			UpdateViewMatrix();
+			UpdateViewMatrix(gameTime);
 		}
 		#endregion
 	}

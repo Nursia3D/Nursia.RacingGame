@@ -81,7 +81,7 @@ namespace RacingGame.GameScreens
 			// Render landscape with track and all objects
 			RacingGameManager.Landscape.Update();
 
-			// Render car with matrix we got from CarPhysics
+			// Render car with matrix we got from Player
 /*			RacingGameManager.CarModel.RenderCar(
 				Globals.CarNumber,
 				RacingGameManager.CarColor,
@@ -122,13 +122,13 @@ namespace RacingGame.GameScreens
 				// Best time and current lap
 				(int)RacingGameManager.Player.BestTimeMilliseconds,
 				RacingGameManager.Player.CurrentLap + 1,
-				RacingGameManager.Player.Speed * CarPhysics.MeterPerSecToMph,
+				RacingGameManager.Player.Speed * Player.MeterPerSecToMph,
 				// Gear logic with sound (could be improved ^^)
 				1 + (int)(5 * RacingGameManager.Player.Speed /
-				CarPhysics.MaxPossibleSpeed),
+				Player.MaxPossibleSpeed),
 				// Motormeter
 				0.5f * RacingGameManager.Player.Speed /
-				CarPhysics.MaxPossibleSpeed +
+				Player.MaxPossibleSpeed +
 				// This could be improved
 				0.5f * RacingGameManager.Player.Acceleration,
 				RacingGameManager.Landscape.CurrentTrackName,

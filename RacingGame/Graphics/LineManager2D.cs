@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using RacingGame.Shaders;
+using Nursia;
 #endregion
 
 namespace RacingGame.Graphics
@@ -289,7 +290,7 @@ namespace RacingGame.Graphics
 					"LineRendering2D",
 					delegate
 					{
-						BaseGame.Device.DrawUserPrimitives<VertexPositionColor>(
+						Nrs.GraphicsDevice.DrawUserPrimitives<VertexPositionColor>(
 							PrimitiveType.LineList, lineVertices, 0, numOfPrimitives);
 					});
 			}
