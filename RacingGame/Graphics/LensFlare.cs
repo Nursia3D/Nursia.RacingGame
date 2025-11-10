@@ -296,7 +296,7 @@ namespace RacingGame.Graphics
 		/// </summary>
 		public void Render(Color sunColor)
 		{
-			ScreenFlareSize = 250 * BaseGame.Width / 1024;
+			ScreenFlareSize = 250 * RG.Width / 1024;
 			Vector3 relativeLensPos = lensOrigin3D + BaseGame.CameraPos;
 
 			// Only show lens flare if facing in the right direction
@@ -319,8 +319,8 @@ namespace RacingGame.Graphics
 			if (sunIntensity < 0.01f)
 				return;
 
-			int resWidth = BaseGame.Width,
-				resHeight = BaseGame.Height;
+			int resWidth = RG.Width,
+				resHeight = RG.Height;
 			Point center = new Point(resWidth / 2, resHeight / 2);
 			Point relOrigin = new Point(
 				center.X - lensOrigin.X, center.Y - lensOrigin.Y);

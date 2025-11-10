@@ -137,7 +137,7 @@ namespace RacingGame.Helpers
 
 #if DEBUG
 				// In debug mode write that message to the console as well!
-				System.Console.WriteLine(s);
+				Console.WriteLine(s);
 #endif
 			}
 			catch (IOException)

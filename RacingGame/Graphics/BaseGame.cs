@@ -370,7 +370,7 @@ namespace RacingGame.Graphics
 		/// <returns>Int</returns>
 		public static int XToRes(int xIn1024px)
 		{
-			return (int)Math.Round(xIn1024px * BaseGame.Width / 1024.0f);
+			return (int)Math.Round(xIn1024px * Width / 1024.0f);
 		}
 
 		/// <summary>
@@ -381,7 +381,7 @@ namespace RacingGame.Graphics
 		/// <returns>Int</returns>
 		public static int YToRes(int yIn640px)
 		{
-			return (int)Math.Round(yIn640px * BaseGame.Height / 640.0f);
+			return (int)Math.Round(yIn640px * Height / 640.0f);
 		}
 
 		/// <summary>
@@ -391,7 +391,7 @@ namespace RacingGame.Graphics
 		/// <returns>Int</returns>
 		public static int YToRes768(int yIn768px)
 		{
-			return (int)Math.Round(yIn768px * BaseGame.Height / 768.0f);
+			return (int)Math.Round(yIn768px * Height / 768.0f);
 		}
 
 		/// <summary>
@@ -401,7 +401,7 @@ namespace RacingGame.Graphics
 		/// <returns>Int</returns>
 		public static int XToRes1600(int xIn1600px)
 		{
-			return (int)Math.Round(xIn1600px * BaseGame.Width / 1600.0f);
+			return (int)Math.Round(xIn1600px * Width / 1600.0f);
 		}
 
 		/// <summary>
@@ -411,7 +411,7 @@ namespace RacingGame.Graphics
 		/// <returns>Int</returns>
 		public static int YToRes1200(int yIn1200px)
 		{
-			return (int)Math.Round(yIn1200px * BaseGame.Height / 1200.0f);
+			return (int)Math.Round(yIn1200px * Height / 1200.0f);
 		}
 
 		/// <summary>
@@ -421,7 +421,7 @@ namespace RacingGame.Graphics
 		/// <returns>Int</returns>
 		public static int XToRes1400(int xIn1400px)
 		{
-			return (int)Math.Round(xIn1400px * BaseGame.Width / 1400.0f);
+			return (int)Math.Round(xIn1400px * Width / 1400.0f);
 		}
 
 		/// <summary>
@@ -431,7 +431,7 @@ namespace RacingGame.Graphics
 		/// <returns>Int</returns>
 		public static int YToRes1050(int yIn1050px)
 		{
-			return (int)Math.Round(yIn1050px * BaseGame.Height / 1050.0f);
+			return (int)Math.Round(yIn1050px * Height / 1050.0f);
 		}
 
 		/// <summary>
@@ -967,7 +967,7 @@ namespace RacingGame.Graphics
 			this.IsFixedTimeStep = false;
 
 			// Init content manager
-			base.Content.RootDirectory = String.Empty;
+			Content.RootDirectory = String.Empty;
 
 			// Update windows title (used for unit testing)
 			this.Window.Title = setWindowsTitle;
@@ -1074,7 +1074,7 @@ namespace RacingGame.Graphics
 			// Set u/v addressing back to wrap
 			Nrs.GraphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;
 			// Restore normal alpha blending
-			BaseGame.SetCurrentAlphaMode(BaseGame.AlphaMode.Default);
+			SetCurrentAlphaMode(AlphaMode.Default);
 
 			//TODO: AlphaTestEffect
 			// Set 128 and greate alpha compare for Model.Render
@@ -1109,7 +1109,7 @@ namespace RacingGame.Graphics
 				ViewProjectionMatrix);
 
 			if (result4.W == 0)
-				result4.W = BaseGame.Epsilon;
+				result4.W = Epsilon;
 			Vector3 result = new Vector3(
 				result4.X / result4.W,
 				result4.Y / result4.W,
@@ -1373,20 +1373,20 @@ namespace RacingGame.Graphics
 				{
 					Texture.alphaSprite.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
 
-					int rank = GameScreens.Highscores.GetRankFromCurrentTime(
+					int rank = Highscores.GetRankFromCurrentTime(
 						RacingGameManager.Player.LevelNum,
 						(int)RacingGameManager.Player.BestTimeMilliseconds);
 
 					// Show one of the trophies
-					BaseGame.UI.GetTrophyTexture(
+					UI.GetTrophyTexture(
 						// Select right one
 						rank == 0 ? UIRenderer.TrophyType.Gold :
 						rank == 1 ? UIRenderer.TrophyType.Silver :
 						UIRenderer.TrophyType.Bronze).
 						RenderOnScreen(new Rectangle(
-						BaseGame.Width / 2 - BaseGame.Width / 8,
-						BaseGame.Height / 2 - BaseGame.YToRes(10),
-						BaseGame.Width / 4, BaseGame.Height * 2 / 5));
+						Width / 2 - Width / 8,
+						Height / 2 - YToRes(10),
+						Width / 4, Height * 2 / 5));
 
 					Texture.alphaSprite.End();
 				}
@@ -1513,7 +1513,7 @@ namespace RacingGame.Graphics
 		internal static void SetRenderTarget(RenderTarget2D renderTarget,
 			bool isSceneRenderTarget)
 		{
-			Device.SetRenderTarget(renderTarget);
+			Nrs.GraphicsDevice.SetRenderTarget(renderTarget);
 			if (isSceneRenderTarget)
 				remSceneRenderTarget = renderTarget;
 			lastSetRenderTarget = renderTarget;

@@ -67,8 +67,8 @@ namespace RacingGame.Graphics
 			if (digit < 0)
 				return 0;
 
-			float resScalingX = (float)BaseGame.Width / 1600.0f;
-			float resScalingY = (float)BaseGame.Height / 1200.0f;
+			float resScalingX = (float)RG.Width / 1600.0f;
+			float resScalingY = (float)RG.Height / 1200.0f;
 
 			Rectangle rect = BigNumberRects[digit % BigNumberRects.Length];
 			BaseGame.UI.Ingame.RenderOnScreen(new Rectangle(x, y,
@@ -91,8 +91,8 @@ namespace RacingGame.Graphics
 			if (digit < 0)
 				return 0;
 
-			float resScalingX = (float)BaseGame.Width / 1600.0f;
-			float resScalingY = (float)BaseGame.Height / 1200.0f;
+			float resScalingX = (float)RG.Width / 1600.0f;
+			float resScalingY = (float)RG.Height / 1200.0f;
 			float scaleFactor = height / (float)BigNumberRects[0].Height;
 
 			Rectangle rect = BigNumberRects[digit % BigNumberRects.Length];
@@ -113,8 +113,8 @@ namespace RacingGame.Graphics
 		/// <returns>Int</returns>
 		private static int WriteDigit(int x, int y, int digit, float alpha)
 		{
-			float resScalingX = (float)BaseGame.Width / 1600.0f;
-			float resScalingY = (float)BaseGame.Height / 1200.0f;
+			float resScalingX = (float)RG.Width / 1600.0f;
+			float resScalingY = (float)RG.Height / 1200.0f;
 
 			Rectangle rect = BigNumberRects[digit % BigNumberRects.Length];
 			BaseGame.UI.Ingame.RenderOnScreen(new Rectangle(x, y,
@@ -211,7 +211,7 @@ namespace RacingGame.Graphics
 		{
 			WriteNumber(
 				(int)(x - (number.ToString().Length * BigNumberRects[0].Width / 2) *
-				((float)BaseGame.Width / 1600.0f)),
+				((float)RG.Width / 1600.0f)),
 				y, number);
 		}
 
@@ -226,7 +226,7 @@ namespace RacingGame.Graphics
 		{
 			WriteNumber(
 				(int)(x - (number.ToString().Length * BigNumberRects[0].Width / 2) *
-				((float)BaseGame.Width / 1600.0f)),
+				((float)RG.Width / 1600.0f)),
 				y, number, alpha);
 		}
 		#endregion

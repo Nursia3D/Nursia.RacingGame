@@ -92,16 +92,16 @@ namespace RacingGame.Shaders
 			switch (sizeType)
 			{
 				case SizeType.FullScreen:
-					texWidth = BaseGame.Width;
-					texHeight = BaseGame.Height;
+					texWidth = RG.Width;
+					texHeight = RG.Height;
 					break;
 				case SizeType.HalfScreen:
-					texWidth = BaseGame.Width / 2;
-					texHeight = BaseGame.Height / 2;
+					texWidth = RG.Width / 2;
+					texHeight = RG.Height / 2;
 					break;
 				case SizeType.QuarterScreen:
-					texWidth = BaseGame.Width / 4;
-					texHeight = BaseGame.Height / 4;
+					texWidth = RG.Width / 4;
+					texHeight = RG.Height / 4;
 					break;
 				case SizeType.ShadowMap:
 					// Use a larger texture for high detail

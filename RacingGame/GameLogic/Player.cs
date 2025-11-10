@@ -374,7 +374,7 @@ namespace RacingGame.GameLogic
 					{
 						// Display Victory message
 						TextureFont.WriteTextCentered(
-							BaseGame.Width / 2, BaseGame.Height / 7,
+							RG.Width / 2, RG.Height / 7,
 							"Victory! You won.",
 							Color.LightGreen, 1.25f);
 					}
@@ -382,23 +382,23 @@ namespace RacingGame.GameLogic
 					{
 						// Display game over message
 						TextureFont.WriteTextCentered(
-							BaseGame.Width / 2, BaseGame.Height / 7,
+							RG.Width / 2, RG.Height / 7,
 							"Game Over! You lost.",
 							Color.Red, 1.25f);
 					}
 
 					for (int num = 0; num < lapTimes.Count; num++)
 						TextureFont.WriteTextCentered(
-							BaseGame.Width / 2,
-							BaseGame.Height / 7 + BaseGame.YToRes(35) * (1 + num),
+							RG.Width / 2,
+							RG.Height / 7 + BaseGame.YToRes(35) * (1 + num),
 							"Lap " + (num + 1) + " Time: " +
 							(((int)lapTimes[num]) / 60).ToString("00") + ":" +
 							(((int)lapTimes[num]) % 60).ToString("00") + "." +
 							(((int)(lapTimes[num] * 100)) % 100).ToString("00"),
 							Color.White, 1.25f);
 					TextureFont.WriteTextCentered(
-						BaseGame.Width / 2,
-						BaseGame.Height / 7 + BaseGame.YToRes(35) * (1 + lapTimes.Count),
+						RG.Width / 2,
+						RG.Height / 7 + BaseGame.YToRes(35) * (1 + lapTimes.Count),
 						"Rank: " + (1 + rank),
 						Color.White, 1.25f);
 

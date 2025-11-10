@@ -360,10 +360,10 @@ namespace RacingGame.Graphics
 		public static void WriteTextCentered(int x, int y, string text,
 			Color color, float scale)
 		{
-			int width = TextureFont.GetTextWidth(text);
+			int width = GetTextWidth(text);
 			remTexts.Add(new FontToRender(
 				x - (int)Math.Round(width * scale / 2),
-				y - (int)Math.Round(TextureFont.Height * scale / 2),
+				y - (int)Math.Round(Height * scale / 2),
 				text, color, scale));
 		}
 

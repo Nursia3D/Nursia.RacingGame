@@ -220,13 +220,13 @@ namespace RacingGame.Properties
 		/// </summary>
 		public static void SetMinimumGraphics()
 		{
-			GameSettings.Default.ResolutionWidth = GameSettings.MinimumResolutionWidth;
-			GameSettings.Default.ResolutionHeight = GameSettings.MinimumResolutionHeight;
-			GameSettings.Default.HighDetail = false;
-			GameSettings.Default.PostScreenEffects = false;
+			Default.ResolutionWidth = MinimumResolutionWidth;
+			Default.ResolutionHeight = MinimumResolutionHeight;
+			Default.HighDetail = false;
+			Default.PostScreenEffects = false;
 
 #if FNA
-            GameSettings.Save();
+			Save();
 #endif
 		}
 		#endregion

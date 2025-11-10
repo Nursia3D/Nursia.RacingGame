@@ -255,7 +255,7 @@ namespace RacingGame.GameScreens
 					highscores[level, num].timeMilliseconds = timeMilliseconds;
 
 					// And save that
-					Highscores.WriteHighscoresToSettings();
+					WriteHighscoresToSettings();
 
 					break;
 				}
@@ -381,7 +381,7 @@ namespace RacingGame.GameScreens
 			for (int num = 0; num < NumOfHighscores; num++)
 			{
 				Rectangle lineRect = new Rectangle(
-					0, yPos, BaseGame.Width, lineHeight);
+					0, yPos, RG.Width, lineHeight);
 				Color col = Input.MouseInBox(lineRect) ?
 					Color.White : new Color(200, 200, 200);
 				TextureFont.WriteText(xPos1, yPos,

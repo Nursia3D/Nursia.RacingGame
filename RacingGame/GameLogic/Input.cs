@@ -329,8 +329,8 @@ namespace RacingGame.GameLogic
 		/// <returns>Bool</returns>
 		public static bool MouseInBoxRelative(Rectangle rect)
 		{
-			float widthFactor = BaseGame.Width / 1024.0f;
-			float heightFactor = BaseGame.Height / 640.0f;
+			float widthFactor = RG.Width / 1024.0f;
+			float heightFactor = RG.Height / 640.0f;
 			return MouseInBox(new Rectangle(
 				(int)Math.Round(rect.X * widthFactor),
 				(int)Math.Round(rect.Y * heightFactor),
@@ -914,7 +914,7 @@ namespace RacingGame.GameLogic
 #else
 			// Handle mouse input variables
 			mouseStateLastFrame = mouseState;
-			mouseState = Microsoft.Xna.Framework.Input.Mouse.GetState();
+			mouseState = Mouse.GetState();
 
 			// Update mouseXMovement and mouseYMovement
 			lastMouseXMovement += mouseState.X - mouseStateLastFrame.X;
@@ -931,15 +931,13 @@ namespace RacingGame.GameLogic
 
 			// If we are in the game and don't show the mouse cursor anyway,
 			// reset it to the center to allow moving it around.
-			if (RacingGameManager.InMenu == false &&
-				// App must be active
-				RacingGameManager.IsAppActive)
+			if (!RG.InGame && RG.IsAppActive)
 			{
-				Microsoft.Xna.Framework.Input.Mouse.SetPosition(
-					BaseGame.Width / 2, BaseGame.Height / 2);
+				Mouse.SetPosition(
+					RG.Width / 2, RG.Height / 2);
 				// Also use this for the current mouse pos for next frame,
 				// else the mouseXMovement is messed up!
-				mouseState = Microsoft.Xna.Framework.Input.Mouse.GetState();
+				mouseState = Mouse.GetState();
 			}
 
 			// Check if mouse was moved this frame if it is not detected yet.

@@ -64,7 +64,7 @@ namespace RacingGame.GameScreens
 		public bool Render()
 		{
 			SpriteBatch textBatch = new SpriteBatch(Nrs.GraphicsDevice);
-			Vector2 position = new Vector2((BaseGame.Width / 2) - 50, (BaseGame.Height / 2) - 20);
+			Vector2 position = new Vector2((RG.Width / 2) - 50, (RG.Height / 2) - 20);
 
 			for (int i = 0; i < loadingText.Length; i++)
 			{
@@ -75,7 +75,7 @@ namespace RacingGame.GameScreens
 				position.X += TextureFont.GetTextWidth(charStr);
 			}
 
-			TextureFont.WriteTextCentered(BaseGame.Width / 2, (int)position.Y + 40, loadingStatus);
+			TextureFont.WriteTextCentered(RG.Width / 2, (int)position.Y + 40, loadingStatus);
 			return RacingGameManager.ContentLoaded;
 		}
 		#endregion

@@ -1,10 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
-using Nursia.Env;
 using Nursia.SceneGraph;
 using Nursia.SceneGraph.Cameras;
-using Nursia.SceneGraph.Lights;
 using RacingGame.GameLogic;
-using RacingGame.Graphics;
 using RacingGame.Helpers;
 using RacingGame.Landscapes;
 
@@ -12,7 +9,7 @@ namespace RacingGame.GameScreens
 {
 	public class SplashScreen2 : IGameScreen2
 	{
-		private readonly Landscape _landscape = new Landscape(RacingGameManager.Level.Beginner);
+		private readonly Landscape _landscape = new Landscape(RacingGameManager.Level.Advanced);
 		private readonly NursiaModelNode _car;
 		private PerspectiveCamera _camera = new PerspectiveCamera
 		{
@@ -75,10 +72,10 @@ namespace RacingGame.GameScreens
 
 		public void Render()
 		{
-			RG.Graphics.AddToRender(RG.Resources.DirectLight);
-			RG.Graphics.AddToRender(_landscape.Scene);
-			RG.Graphics.AddToRender(_car);
-			RG.Graphics.DoRender(_camera);
+			RG.Graphics3D.AddToRender(RG.Resources.DirectLight);
+			RG.Graphics3D.AddToRender(_landscape.Scene);
+			RG.Graphics3D.AddToRender(_car);
+			RG.Graphics3D.DoRender(_camera);
 		}
 	}
 }

@@ -213,7 +213,7 @@ namespace RacingGame.Tracks
 		{
 			// Do we need to load the base track again?
 			// Always reload! Else we might mess up the checkpoints, etc.
-			base.Load(TrackData.Load(setTrackName), landscape);
+			Load(TrackData.Load(setTrackName), landscape);
 
 			GenerateVerticesAndObjects(landscape);
 		}

@@ -1,6 +1,7 @@
 ﻿using AssetManagementBase;
 using Microsoft.Xna.Framework;
 using Nursia;
+using RacingGame.GameLogic;
 using RacingGame.GameScreens;
 using RacingGame.Utilities;
 using System.IO;
@@ -18,6 +19,10 @@ namespace RacingGame
 		public static float ElapsedMs => (float)GameTime.ElapsedGameTime.TotalMilliseconds;
 
 		public static bool InGame => false;
+		public static bool IsAppActive => true;
+
+		public static int Width => Nrs.GraphicsDevice.Viewport.Width;
+		public static int Height => Nrs.GraphicsDevice.Viewport.Height;
 
 		public static IGameScreen2 CurrentScreen { get; set; }
 
@@ -37,6 +42,9 @@ namespace RacingGame
 		public static void Update(GameTime gameTime)
 		{
 			GameTime = gameTime;
+
+			Input.Update();
+
 			CurrentScreen?.Update();
 		}
 

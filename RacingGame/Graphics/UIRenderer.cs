@@ -442,8 +442,8 @@ namespace RacingGame.Graphics
 						TimeFadeupText.MaxShowTimeMs;
 
 					// Calculate screen position
-					TextureFont.WriteTextCentered(BaseGame.Width / 2,
-						BaseGame.Height / 3 - (int)(moveUpAmount * BaseGame.Height / 3),
+					TextureFont.WriteTextCentered(RG.Width / 2,
+						RG.Height / 3 - (int)(moveUpAmount * RG.Height / 3),
 						fadeupText.text,
 						ColorHelper.ApplyAlphaToColor(fadeupText.color, alpha),
 						2.25f);
@@ -592,7 +592,7 @@ namespace RacingGame.Graphics
 		{
 			Rectangle bButtonRect = BaseGame.CalcRectangleCenteredWithGivenHeight(
 				0, 587, 48, BottomButtonBButtonGfxRect);
-			bButtonRect.X = BaseGame.Width - bButtonRect.Width - BaseGame.XToRes(25 + 25);
+			bButtonRect.X = RG.Width - bButtonRect.Width - BaseGame.XToRes(25 + 25);
 			bool overBButton = Input.MouseInBox(bButtonRect);
 			int xAdd = BaseGame.XToRes(16);
 			int yAdd = BaseGame.YToRes(9);
@@ -615,7 +615,7 @@ namespace RacingGame.Graphics
 
 			Rectangle aButtonRect = BaseGame.CalcRectangleCenteredWithGivenHeight(
 				0, 587, 48, BottomButtonAButtonGfxRect);
-			aButtonRect.X = BaseGame.Width -
+			aButtonRect.X = RG.Width -
 				aButtonRect.Width * 2 - BaseGame.XToRes(55 + 25);
 			bool overAButton = Input.MouseInBox(aButtonRect);
 			if (overAButton)
@@ -675,12 +675,12 @@ namespace RacingGame.Graphics
             
             Rectangle timesRect = BaseGame.CalcRectangle1600(
                 60, 46, CurrentAndBestGfxRect.Width, CurrentAndBestGfxRect.Height);
-            timesRect.Y = BaseGame.Height-timesRect.Bottom;
+            timesRect.Y = RG.Height-timesRect.Bottom;
             ingame.RenderOnScreen(timesRect, CurrentAndBestGfxRect, baseUIColor);
             
             Rectangle trackNameRect = BaseGame.CalcRectangle1600(
                 60, 46, TrackNameGfxRect.Width, TrackNameGfxRect.Height);
-            trackNameRect.X = BaseGame.Width-trackNameRect.Right;
+            trackNameRect.X = RG.Width-trackNameRect.Right;
             ingame.RenderOnScreen(trackNameRect, TrackNameGfxRect, baseUIColor);
             Rectangle top5Rect1 = BaseGame.CalcRectangle1600(
                 60, 4, Best5GfxRect.Width, Best5GfxRect.Height);
@@ -703,8 +703,8 @@ namespace RacingGame.Graphics
 
             Rectangle tachoRect = BaseGame.CalcRectangle1600(
                 60, 46, TachoGfxRect.Width, TachoGfxRect.Height);
-            tachoRect.X = BaseGame.Width-tachoRect.Right;
-            tachoRect.Y = BaseGame.Height-tachoRect.Bottom;
+            tachoRect.X = RG.Width-tachoRect.Right;
+            tachoRect.Y = RG.Height-tachoRect.Bottom;
 #else
 			// Draw all boxes and background stuff
 			Rectangle lapsRect = BaseGame.CalcRectangle1600(
@@ -713,12 +713,12 @@ namespace RacingGame.Graphics
 
 			Rectangle timesRect = BaseGame.CalcRectangle1600(
 				10, 10, CurrentAndBestGfxRect.Width, CurrentAndBestGfxRect.Height);
-			timesRect.Y = BaseGame.Height - timesRect.Bottom;
+			timesRect.Y = RG.Height - timesRect.Bottom;
 			ingame.RenderOnScreen(timesRect, CurrentAndBestGfxRect, baseUIColor);
 
 			Rectangle trackNameRect = BaseGame.CalcRectangle1600(
 				10, 10, TrackNameGfxRect.Width, TrackNameGfxRect.Height);
-			trackNameRect.X = BaseGame.Width - trackNameRect.Right;
+			trackNameRect.X = RG.Width - trackNameRect.Right;
 			ingame.RenderOnScreen(trackNameRect, TrackNameGfxRect, baseUIColor);
 			Rectangle top5Rect1 = BaseGame.CalcRectangle1600(
 				10, 4, Best5GfxRect.Width, Best5GfxRect.Height);
@@ -741,8 +741,8 @@ namespace RacingGame.Graphics
 
 			Rectangle tachoRect = BaseGame.CalcRectangle1600(
 				10, 10, TachoGfxRect.Width, TachoGfxRect.Height);
-			tachoRect.X = BaseGame.Width - tachoRect.Right;
-			tachoRect.Y = BaseGame.Height - tachoRect.Bottom;
+			tachoRect.X = RG.Width - tachoRect.Right;
+			tachoRect.Y = RG.Height - tachoRect.Bottom;
 #endif
 
 			// Rest can stay the same because we use the rectangles from now on
@@ -933,7 +933,7 @@ namespace RacingGame.Graphics
 				TextureFont.WriteText(
 					BaseGame.XToRes(200), BaseGame.YToRes(26),
 					"Fps: " + BaseGame.Fps + " " +
-					BaseGame.Width + "x" + BaseGame.Height);
+					RG.Width + "x" + RG.Height);
 
 			// Render font texts
 			RenderTimeFadeupEffects();

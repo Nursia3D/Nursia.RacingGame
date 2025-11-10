@@ -18,7 +18,7 @@ namespace RacingGame
 		{
 			private static readonly string[] _textures = new string[]
 			{
-			"RacerCar", "RacerCar2", "RacerCar3"
+				"RacerCar", "RacerCar2", "RacerCar3"
 			};
 
 			/// <summary>
@@ -72,9 +72,9 @@ namespace RacingGame
 			public static NursiaModelNode CreateCar(int number)
 			{
 				var textureName = _textures[number];
-				var texture = RG.Assets.LoadTexture2D(Nrs.GraphicsDevice, $"Textures/{textureName}.tga");
+				var texture = Assets.LoadTexture2D(Nrs.GraphicsDevice, $"Textures/{textureName}.tga");
 
-				var result = (NursiaModelNode)RG.Assets.LoadSceneNode("Scenes/Car.scene");
+				var result = (NursiaModelNode)Assets.LoadSceneNode("Scenes/Car.scene");
 				var wheelsBoneIndices = (from b in result.Model.Bones where b.Mesh != null && b.Mesh.MeshParts.Count == 2 select b.Index).ToArray();
 
 				// Add wheels' turning
@@ -112,7 +112,7 @@ namespace RacingGame
 
 			public static SceneNode LoadScene(string name)
 			{
-				var result = RG.Assets.LoadSceneNode($"Scenes/{name}.scene");
+				var result = Assets.LoadSceneNode($"Scenes/{name}.scene");
 
 				// Setup animations
 				result.Iterate(n =>
@@ -130,7 +130,7 @@ namespace RacingGame
 						{
 							var originalTransform = windmillWingsBone.CalculateDefaultLocalTransform();
 
-							asModel.ModelInstance.SetBoneLocalTransform(windmillWingsBone.Index, Matrix.CreateRotationZ(RG.TotalTime / 0.654f) * originalTransform);
+							asModel.ModelInstance.SetBoneLocalTransform(windmillWingsBone.Index, Matrix.CreateRotationZ(TotalTime / 0.654f) * originalTransform);
 						};
 					}
 				});

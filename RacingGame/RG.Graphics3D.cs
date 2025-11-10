@@ -8,7 +8,7 @@ namespace RacingGame
 {
 	partial class RG
 	{
-		public static class Graphics
+		public static class Graphics3D
 		{
 			private static readonly ForwardRenderer _renderer = new ForwardRenderer();
 			private static readonly SceneNode _root = new SceneNode();

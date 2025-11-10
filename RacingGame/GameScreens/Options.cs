@@ -74,13 +74,13 @@ namespace RacingGame.GameScreens
 		{
 			// Current resolution:
 			// 0=640x480, 1=800x600, 2=1024x768, 3=1280x1024, 4=auto (default)
-			if (BaseGame.Width == 640 && BaseGame.Height == 480)
+			if (RG.Width == 640 && RG.Height == 480)
 				currentResolution = 0;
-			if (BaseGame.Width == 800 && BaseGame.Height == 600)
+			if (RG.Width == 800 && RG.Height == 600)
 				currentResolution = 1;
-			if (BaseGame.Width == 1024 && BaseGame.Height == 768)
+			if (RG.Width == 1024 && RG.Height == 768)
 				currentResolution = 2;
-			if (BaseGame.Width == 1280 && BaseGame.Height == 1024)
+			if (RG.Width == 1280 && RG.Height == 1024)
 				currentResolution = 3;
 
 			// Get graphics detail settings

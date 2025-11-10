@@ -189,7 +189,7 @@ namespace RacingGame.Sounds
 			// Only start new brake sound if not currently playing one
 			if (brakeSoundStillPlayingMs <= 0 &&
 				// Don't play anything like this sounds in the menu mode!
-				RacingGameManager.InMenu == false)
+				!RG.InGame)
 			{
 				// Play sound
 				Play(soundBrakeType);
@@ -254,9 +254,9 @@ namespace RacingGame.Sounds
 			// Only start new brake sound if not currently playing one
 			if (crashSoundStillPlayingMs <= 0 &&
 				// Don't play anything like this sounds in the menu mode!
-				RacingGameManager.InMenu == false)
+				!RG.InGame)
 			{
-				Sound.Play(totalCrash ? Sounds.CarCrashTotal : Sounds.CarCrashMinor);
+				Play(totalCrash ? Sounds.CarCrashTotal : Sounds.CarCrashMinor);
 				// Wait a while for the next crash sound
 				crashSoundStillPlayingMs = totalCrash ? 3456 : 2345;
 			}
@@ -407,8 +407,8 @@ namespace RacingGame.Sounds
 		public static void StartGearSound()
 		{
 			currentGear = 0;
-			Sound.PlayGearSound("Gear1");
-			Sound.UpdateGearVolumeAndPitch("Gear1", stayingVol, minPitch[0]);
+			PlayGearSound("Gear1");
+			UpdateGearVolumeAndPitch("Gear1", stayingVol, minPitch[0]);
 		}
 		#endregion
 
@@ -454,7 +454,7 @@ namespace RacingGame.Sounds
 				if (newGear > currentGear)
 				{
 					// Next gear
-					Sound.PlayGearSound(
+					PlayGearSound(
 						"Gear" + (newGear) + "ToGear" + (newGear + 1));
 					lastGearVolume = 1.0f;
 					lastGearPitch = 0.0f;
@@ -464,7 +464,7 @@ namespace RacingGame.Sounds
 					// Previous gear, change immediately
 					//Sound.PlayGearSound(
 					//    "Gear" + (newGear + 2) + "ToGear" + (newGear + 1));
-					Sound.PlayGearSound("Gear" + (newGear + 1));
+					PlayGearSound("Gear" + (newGear + 1));
 					lastGearVolume = 1.0f;
 					lastGearPitch = maxPitch[newGear];
 				}
@@ -515,7 +515,7 @@ namespace RacingGame.Sounds
 				5.0f * BaseGame.MoveFactorPerSecond);
 			lastGearPitch = MathHelper.Lerp(lastGearPitch, pitch,
 				5.0f * BaseGame.MoveFactorPerSecond);
-			Sound.UpdateGearVolumeAndPitch(
+			UpdateGearVolumeAndPitch(
 				"Gear" + (currentGear + 1), lastGearVolume, lastGearPitch);
 
 		}

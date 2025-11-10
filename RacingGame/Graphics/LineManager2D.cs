@@ -197,13 +197,13 @@ namespace RacingGame.Graphics
 				Line line = (Line)lines[lineNum];
 				lineVertices[lineNum * 2 + 0] = new VertexPositionColor(
 					new Vector3(
-					-1.0f + 2.0f * line.startPoint.X / BaseGame.Width,
-					-(-1.0f + 2.0f * line.startPoint.Y / BaseGame.Height), 0),
+					-1.0f + 2.0f * line.startPoint.X / RG.Width,
+					-(-1.0f + 2.0f * line.startPoint.Y / RG.Height), 0),
 					line.color);
 				lineVertices[lineNum * 2 + 1] = new VertexPositionColor(
 					new Vector3(
-					-1.0f + 2.0f * line.endPoint.X / BaseGame.Width,
-					-(-1.0f + 2.0f * line.endPoint.Y / BaseGame.Height), 0),
+					-1.0f + 2.0f * line.endPoint.X / RG.Width,
+					-(-1.0f + 2.0f * line.endPoint.Y / RG.Height), 0),
 					line.color);
 			}
 			numOfPrimitives = numOfLines;
