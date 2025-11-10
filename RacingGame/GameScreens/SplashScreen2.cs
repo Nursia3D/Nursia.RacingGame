@@ -12,11 +12,6 @@ namespace RacingGame.GameScreens
 {
 	public class SplashScreen2 : IGameScreen2
 	{
-		private readonly DirectLight _directLight = new DirectLight
-		{
-			MaxShadowDistance = 500,
-			Direction = -LensFlare.DefaultLightPos
-		};
 		private readonly Landscape _landscape = new Landscape(RacingGameManager.Level.Beginner);
 		private readonly NursiaModelNode _car;
 		private PerspectiveCamera _camera = new PerspectiveCamera
@@ -36,13 +31,13 @@ namespace RacingGame.GameScreens
 			_player = new Player(_landscape, Vector3.Zero);
 			_landscape.SetCarToStartPosition(_player);
 			var randomCarNumber = RandomHelper.GetRandomInt(3);
-			_car = CarFactory.CreateCar(randomCarNumber);
+			_car = RG.Resources.CreateCar(randomCarNumber);
 		}
 
-		public void Update(GameTime gameTime)
+		public void Update()
 		{
 			// Advance menu car preview time
-			_carMenuTime += (float)gameTime.ElapsedGameTime.TotalMilliseconds / 1000.0f;
+			_carMenuTime += (float)RG.GameTime.ElapsedGameTime.TotalMilliseconds / 1000.0f;
 			if (_carMenuTime > _landscape.BestReplay.LapTime)
 				_carMenuTime -= _landscape.BestReplay.LapTime;
 
@@ -72,7 +67,7 @@ namespace RacingGame.GameScreens
 
 			// Mix camera positions, interpolate slowly, much smoother camera!
 			_player.SetCameraPosition(carPos + _oldCarForward * 13 - _oldCarUp * 1.3f);
-			_player.Update(gameTime);
+			_player.Update();
 
 			_camera.View = _player.RotationMatrix;
 			_car.GlobalTransform = Constants.objectMatrix * _player.CarRenderMatrix;
@@ -80,10 +75,10 @@ namespace RacingGame.GameScreens
 
 		public void Render()
 		{
-			RG.AddToRender(_directLight);
-			RG.AddToRender(_landscape.Scene);
-			RG.AddToRender(_car);
-			RG.DoRender(_camera, RenderEnvironment.Default);
+			RG.Graphics.AddToRender(RG.Resources.DirectLight);
+			RG.Graphics.AddToRender(_landscape.Scene);
+			RG.Graphics.AddToRender(_car);
+			RG.Graphics.DoRender(_camera);
 		}
 	}
 }

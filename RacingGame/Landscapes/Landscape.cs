@@ -110,7 +110,7 @@ namespace RacingGame.Landscapes
 				else
 					Sound.Play(Sound.Sounds.Beep);
 
-				var model = ModelUtils.LoadModel(starLightsModels[number]);
+				var model = RG.Resources.LoadModel(starLightsModels[number]);
 				startLightObject.ChangeModel(starLightsModels[number], model);
 			}
 		}
@@ -184,7 +184,7 @@ namespace RacingGame.Landscapes
 
 		public static float GetMapHeight(float x, float y)
 		{
-			return RG.Terrain.GetHeight(new Vector3(x, y, 0));
+			return RG.Resources.Terrain.GetHeight(new Vector3(x, y, 0));
 		}
 
 		/// <summary>
@@ -221,7 +221,7 @@ namespace RacingGame.Landscapes
 				renderMatrix.Translation = modelPos;
 			}
 
-			var model = ModelUtils.LoadModel(modelName);
+			var model = RG.Resources.LoadModel(modelName);
 			var size = model.Model.CalculateSize();
 
 			// Check if another object is nearby, then skip this one!
@@ -280,7 +280,7 @@ namespace RacingGame.Landscapes
 
 			if (!isCombi)
 			{
-				var model = ModelUtils.LoadModel(modelName);
+				var model = RG.Resources.LoadModel(modelName);
 				objSize = model.Model.CalculateSize();
 			}
 
@@ -340,7 +340,7 @@ namespace RacingGame.Landscapes
 			{
 				if (_scene.Children.Count == 0)
 				{
-					_scene.Children.Add(RG.Terrain);
+					_scene.Children.Add(RG.Resources.Terrain);
 
 					_scene.Children.Add(track.Scene);
 
@@ -569,7 +569,7 @@ namespace RacingGame.Landscapes
 			brakeTracksVerticesArray = null;
 
 			// Begin game with red start light
-			startLightObject.ChangeModel(starLightsModels[0], ModelUtils.LoadModel(starLightsModels[0]));
+			startLightObject.ChangeModel(starLightsModels[0], RG.Resources.LoadModel(starLightsModels[0]));
 		}
 		#endregion
 

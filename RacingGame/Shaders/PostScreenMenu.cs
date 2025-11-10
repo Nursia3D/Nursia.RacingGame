@@ -206,7 +206,7 @@ namespace RacingGame.Shaders
 
 			if (timer != null)
 				// Add a little offset to prevent first effect.
-				timer.SetValue(BaseGame.TotalTime + 0.75f);
+				timer.SetValue(RG.TotalTime + 0.75f);
 
 			effect.CurrentTechnique = effect.Techniques["ScreenGlow20"];
 

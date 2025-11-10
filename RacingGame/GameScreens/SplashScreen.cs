@@ -49,7 +49,7 @@ namespace RacingGame.GameScreens
 			BaseGame.UI.RenderBlackBar(518, 61);
 
 			// Show Press Start to continue. 
-			if ((int)(BaseGame.TotalTime / 0.375f) % 3 != 0)
+			if ((int)(RG.TotalTime / 0.375f) % 3 != 0)
 				BaseGame.UI.Headers.RenderOnScreen(
 					BaseGame.CalcRectangleCenteredWithGivenHeight(
 					512, 518 + 61 / 2, 26, UIRenderer.PressStartGfxRect),

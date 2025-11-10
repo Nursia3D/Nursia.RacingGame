@@ -352,7 +352,7 @@ namespace RacingGame.GameLogic
 		/// <summary>
 		/// Update game logic, called every frame.
 		/// </summary>
-		public void Update(GameTime gameTime)
+		public void Update()
 		{
 			// Don't handle any more game logic if game is over.
 			if (RG.InGame && ZoomInTime <= 0)
@@ -363,7 +363,7 @@ namespace RacingGame.GameLogic
 					// Just rotate around, don't use camera class!
 					cameraPos = CarPosition + new Vector3(0, -5, +20) +
 						Vector3.TransformNormal(new Vector3(30, 0, 0),
-						Matrix.CreateRotationZ((float)gameTime.TotalGameTime.TotalMilliseconds / 2593.0f));
+						Matrix.CreateRotationZ(RG.TotalMs / 2593.0f));
 					rotMatrix = Matrix.CreateLookAt(
 						cameraPos, CarPosition, CarUpVector);
 					int rank = Highscores.GetRankFromCurrentTime(
@@ -409,8 +409,7 @@ namespace RacingGame.GameLogic
 				// Check if car is in the air,
 				// used to check if the player died.
 				if (this.isCarOnGround == false)
-					inAirTimeMilliseconds +=
-						(float)gameTime.ElapsedGameTime.TotalMilliseconds;
+					inAirTimeMilliseconds += RG.ElapsedMs;
 				else
 					// Back on ground, reset
 					inAirTimeMilliseconds = 0;
@@ -464,7 +463,7 @@ namespace RacingGame.GameLogic
 				if (RG.InGame && zoomInTime > 0)
 				{
 					float lastZoomInTime = zoomInTime;
-					zoomInTime -= (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+					zoomInTime -= RG.ElapsedMs;
 
 					if (zoomInTime < 2000 &&
 						(int)((lastZoomInTime + 1000) / 1000) != (int)((zoomInTime + 1000) / 1000))
@@ -480,11 +479,11 @@ namespace RacingGame.GameLogic
 			if (CanControlCar)
 			{
 				// Increase game time
-				currentGameTimeMilliseconds += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+				currentGameTimeMilliseconds += RG.ElapsedMs;
 			}
 
-			UpdatePlayer(gameTime);
-			UpdateChaseCamera(gameTime);
+			UpdatePlayer();
+			UpdateChaseCamera();
 		}
 		#endregion
 	}

@@ -144,7 +144,7 @@ namespace RacingGame.GameScreens
 			TextureFont.WriteText(xPos, yPos,
 				currentPlayerName +
 				// Add blinking |
-				((int)(BaseGame.TotalTime / 0.35f) % 2 == 0 ? "|" : ""));
+				((int)(RG.TotalTime / 0.35f) % 2 == 0 ? "|" : ""));
 			Input.HandleKeyboardInput(ref currentPlayerName);
 			#endregion
 
@@ -421,7 +421,7 @@ namespace RacingGame.GameScreens
 					lineArrowGfxRects[num]);
 				lineRect.Y += BaseGame.YToRes768(125);
 				lineRect.X -= BaseGame.XToRes(8 + (int)Math.Round(8 *
-					Math.Sin(BaseGame.TotalTime / 0.21212f)));
+					Math.Sin(RG.TotalTime / 0.21212f)));
 
 				// Draw selection arrow
 				if (currentOptionsNumber == num)

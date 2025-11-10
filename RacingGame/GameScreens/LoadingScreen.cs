@@ -69,7 +69,7 @@ namespace RacingGame.GameScreens
 			for (int i = 0; i < loadingText.Length; i++)
 			{
 				string charStr = new string(loadingText[i], 1);
-				int charHeight = (int)(position.Y + 7 * Math.Abs(Math.Sin((i / 4f) + (-BaseGame.TotalTime * 3))));
+				int charHeight = (int)(position.Y + 7 * Math.Abs(Math.Sin((i / 4f) + (-RG.TotalTime * 3))));
 				TextureFont.WriteText((int)position.X, charHeight, charStr, Color.Red);
 
 				position.X += TextureFont.GetTextWidth(charStr);

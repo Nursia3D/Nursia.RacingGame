@@ -1,7 +1,6 @@
 ﻿using AssetManagementBase;
 using Microsoft.Xna.Framework;
 using Nursia;
-using Nursia.SceneGraph.Landscape;
 using RacingGame.GameScreens;
 using RacingGame.Utilities;
 using System.IO;
@@ -12,11 +11,11 @@ namespace RacingGame
 	{
 		public static AssetManager Assets { get; private set; }
 
-		/// <summary>
-		/// Since we have one terrain for all levels
-		/// It's better to store it globally
-		/// </summary>
-		public static TerrainNode Terrain { get; private set; }
+		public static GameTime GameTime { get; set; }
+
+		public static float TotalMs => (float)GameTime.TotalGameTime.TotalMilliseconds;
+		public static float TotalTime => TotalMs / 1000.0f;
+		public static float ElapsedMs => (float)GameTime.ElapsedGameTime.TotalMilliseconds;
 
 		public static bool InGame => false;
 
@@ -28,15 +27,23 @@ namespace RacingGame
 			var contentPath = Path.Combine(PathUtils.ExecutingAssemblyDirectory, "Assets");
 			Assets = AssetManager.CreateFileAssetManager(contentPath);
 
-			// Terrain Node
-			Terrain = (TerrainNode)Assets.LoadSceneNode("Scenes/Landscape.scene");
-			Terrain.Translation = new Vector3(1280, 1280, 0);
-			Terrain.Rotation = new Vector3(90, 0, 0);
-
+			Resources.Initialize();
 			Highscores.Initialize();
 
 			// Initial screen is splash
 			CurrentScreen = new SplashScreen2();
+		}
+
+		public static void Update(GameTime gameTime)
+		{
+			GameTime = gameTime;
+			CurrentScreen?.Update();
+		}
+
+		public static void Render(GameTime gameTime)
+		{
+			GameTime = gameTime;
+			CurrentScreen?.Render();
 		}
 	}
 }

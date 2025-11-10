@@ -106,35 +106,5 @@ namespace RacingGame.Utilities
 
 			return realScaling;
 		}
-
-		public static SceneNode LoadScene(string name)
-		{
-			var result = RG.Assets.LoadSceneNode($"Scenes/{name}.scene");
-
-			// Setup animations
-			result.Iterate(n =>
-			{
-				var asModel = n as NursiaModelNode;
-				if (asModel == null)
-				{
-					return;
-				}
-
-				var windmillWingsBone = (from bone in asModel.Model.Bones where bone.Name != null && bone.Name.ToLower().StartsWith("windmill_wings") select bone).FirstOrDefault();
-				if (windmillWingsBone != null)
-				{
-					asModel.PreRender += () =>
-					{
-						var originalTransform = windmillWingsBone.CalculateDefaultLocalTransform();
-
-						asModel.ModelInstance.SetBoneLocalTransform(windmillWingsBone.Index, Matrix.CreateRotationZ(BaseGame.TotalTime / 0.654f) * originalTransform);
-					};
-				}
-			});
-
-			return result;
-		}
-
-		public static NursiaModelNode LoadModel(string name) => (NursiaModelNode)LoadScene(name);
 	}
 }

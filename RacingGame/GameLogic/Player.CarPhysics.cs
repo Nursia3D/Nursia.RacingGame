@@ -447,7 +447,7 @@ namespace RacingGame.GameLogic
 		/// <summary>
 		/// Update game logic for our car.
 		/// </summary>
-		public void UpdatePlayer(GameTime gameTime)
+		public void UpdatePlayer()
 		{
 			// Don't use the car position and car handling if in free camera mode.
 			if (FreeCamera)
@@ -828,7 +828,7 @@ namespace RacingGame.GameLogic
 				trackPos + trackMatrix.Right *
 				(nextRoadWidth / 2 - GuardRail.InsideRoadDistance / 2) +
 				trackMatrix.Forward);
-			carRenderMatrix = UpdateCarMatrixAndCamera(gameTime);
+			carRenderMatrix = UpdateCarMatrixAndCamera();
 
 			// Finally check for collisions with the guard rails.
 			// Also handle gravity.
@@ -1148,7 +1148,7 @@ namespace RacingGame.GameLogic
 		/// <summary>
 		/// Update car matrix and camera
 		/// </summary>
-		public Matrix UpdateCarMatrixAndCamera(GameTime gameTime)
+		public Matrix UpdateCarMatrixAndCamera()
 		{
 			// Get car matrix with help of the current car position, dir and up
 			Matrix carMatrix = Matrix.Identity;
@@ -1173,7 +1173,7 @@ namespace RacingGame.GameLogic
 						/ ((float)StartGameZoomTimeMilliseconds)) * 200.0f);
 
 				// Make sure we don't interpolate at the first time
-				if (ZoomInTime - (float)gameTime.ElapsedGameTime.TotalMilliseconds >= 3000)
+				if (ZoomInTime - RG.ElapsedMs >= 3000)
 					SetCameraPosition(camPos);
 				else
 					InterpolateCameraPosition(camPos);
@@ -1184,7 +1184,7 @@ namespace RacingGame.GameLogic
 					carMatrix.Forward * chaseCamDistance -
 					carMatrix.Up * chaseCamDistance / (viewDistance + 6.0f) -
 					carMatrix.Up * 1.0f);
-			else if (!RG.InGame && (float)gameTime.TotalGameTime.TotalMilliseconds < 100)
+			else if (!RG.InGame && RG.TotalMs < 100)
 				// No interpolation in menu, just set it (at least for the first ms)
 				SetCameraPosition(
 					carPos + carUp * CarHeight +

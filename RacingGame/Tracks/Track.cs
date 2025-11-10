@@ -198,7 +198,7 @@ namespace RacingGame.Tracks
 		public Track(string setTrackName, Landscape landscape)
 			: base(TrackData.Load(setTrackName), landscape)
 		{
-			_scene = ModelUtils.LoadScene(setTrackName);
+			_scene = RG.Resources.LoadScene(setTrackName);
 
 			GenerateVerticesAndObjects(landscape);
 		}

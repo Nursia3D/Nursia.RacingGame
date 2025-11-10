@@ -202,8 +202,8 @@ namespace RacingGame.GameScreens
 
 			// Also show bouncing arrow on top of car
 			float arrowWave =
-				(float)Math.Sin(BaseGame.TotalTime / 0.46f) *
-				(float)Math.Cos(BaseGame.TotalTime / 0.285f);
+				(float)Math.Sin(RG.TotalTime / 0.46f) *
+				(float)Math.Cos(RG.TotalTime / 0.285f);
 			float arrowScale = 0.75f - 0.065f * arrowWave;
 			Rectangle arrowRect = BaseGame.CalcRectangle(512, 120,
 				(int)Math.Round(UIRenderer.BigArrowGfxRect.Width * arrowScale),
@@ -405,7 +405,7 @@ namespace RacingGame.GameScreens
 			Matrix[] renderMatrices = new Matrix[3];
 			for (int carNum = 0; carNum < 3; carNum++)
 				renderMatrices[carNum] =
-					Matrix.CreateRotationZ(BaseGame.TotalTime / 3.9f) *
+					Matrix.CreateRotationZ(RG.TotalTime / 3.9f) *
 					Matrix.CreateTranslation(new Vector3(0, 5.0f, 0)) *
 					Matrix.CreateRotationZ(-carSelectionRotationZ + carNum * perCarRot) *
 					Matrix.CreateTranslation(new Vector3(1.5f, 0.0f, 1.0f));

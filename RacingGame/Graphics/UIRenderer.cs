@@ -487,7 +487,7 @@ namespace RacingGame.Graphics
 			{
 				if (_car == null)
 				{
-					_car = CarFactory.CreateCar(randomCarNumber);
+					_car = RG.Resources.CreateCar(randomCarNumber);
 				}
 
 				GameCommon.AddToRender(RacingGameManager.Landscape.Scene);
@@ -559,8 +559,8 @@ namespace RacingGame.Graphics
 
 			// Show RacingGame logo bouncing with the music
 			float bounceSize = 1.005f +
-				(float)Math.Sin(BaseGame.TotalTime / 0.46f) * 0.045f *
-				(float)Math.Cos(BaseGame.TotalTime / 0.285f);
+				(float)Math.Sin(RG.TotalTime / 0.46f) * 0.045f *
+				(float)Math.Cos(RG.TotalTime / 0.285f);
 			background.RenderOnScreen(
 				BaseGame.CalcRectangleWithBounce(362, 36, 601, 218, bounceSize),
 				RacingGameLogoGfxRect);

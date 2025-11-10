@@ -386,7 +386,7 @@ namespace RacingGame.GameLogic
 		/// <summary>
 		/// Update view matrix
 		/// </summary>
-		private void UpdateViewMatrix(GameTime gameTime)
+		private void UpdateViewMatrix()
 		{
 			cameraDistance = cameraDistance * 0.9f + wannaCameraDistance * 0.1f;
 
@@ -405,7 +405,7 @@ namespace RacingGame.GameLogic
 			// Is camera wobbeling?
 			if (cameraWobbelTimeoutMs > 0)
 			{
-				cameraWobbelTimeoutMs -= (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+				cameraWobbelTimeoutMs -= RG.ElapsedMs;
 				if (cameraWobbelTimeoutMs < 0)
 					cameraWobbelTimeoutMs = 0;
 			}
@@ -456,12 +456,11 @@ namespace RacingGame.GameLogic
 		/// <summary>
 		/// Update camera, should be called every frame to handle all the input.
 		/// </summary>
-		public void UpdateChaseCamera(GameTime gameTime)
+		public void UpdateChaseCamera()
 		{
 			// Only allow control when zooming is finished.
 			HandleFreeCamera();
-
-			UpdateViewMatrix(gameTime);
+			UpdateViewMatrix();
 		}
 		#endregion
 	}

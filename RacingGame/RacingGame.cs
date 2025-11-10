@@ -45,7 +45,7 @@ namespace RacingGame
 		{
 			base.Update(gameTime);
 
-			RG.CurrentScreen?.Update(gameTime);
+			RG.Update(gameTime);
 		}
 
 		protected override void Draw(GameTime gameTime)
@@ -54,12 +54,12 @@ namespace RacingGame
 
 			GraphicsDevice.Clear(Color.Black);
 
-			RG.CurrentScreen?.Render();
+			RG.Render(gameTime);
 
 			_spriteBatch.Begin();
 
 			var font = Nrs.DebugFont;
-			var statistics = RG.Statistics;
+			var statistics = RG.Graphics.Statistics;
 			_spriteBatch.DrawString(font, $"FPS: {_fpsCounter.FramesPerSecond}", new Vector2(0, 0), Color.White);
 			_spriteBatch.DrawString(font, $"Effect Switches: {statistics.EffectsSwitches}", new Vector2(0, 24), Color.White);
 			_spriteBatch.DrawString(font, $"Draw Calls: {statistics.DrawCalls}", new Vector2(0, 48), Color.White);
