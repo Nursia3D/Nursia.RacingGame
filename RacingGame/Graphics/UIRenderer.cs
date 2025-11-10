@@ -474,11 +474,12 @@ namespace RacingGame.Graphics
 		private Vector3 carPos = RacingGameManager.Player.CarPosition;
 		private int randomCarNumber = RandomHelper.GetRandomInt(3);
 		private Color randomCarColor = RandomHelper.RandomColor;
+		private NursiaModelNode _car;
 
 		/// <summary>
 		/// Render menu track background
 		/// </summary>
-		public void RenderMenuTrackBackground(RenderQueue renderQueue)
+		public void RenderMenuTrackBackground()
 		{
 			// Only render track if we are not doing any 3d data on the screen
 			if (RacingGameManager.InCarSelectionScreen == false)
@@ -491,14 +492,18 @@ namespace RacingGame.Graphics
 									false,
 									RacingGameManager.Player.CarRenderMatrix);*/
 
-				renderQueue.AddToRender(RacingGameManager.Landscape.Scene);
-				var car = BaseGame.CarWrapper.GetCar(randomCarNumber);
+				if (_car == null)
+				{
+					_car = CarFactory.CreateCar(randomCarNumber);
+				}
 
-				car.GlobalTransform = Constants.objectMatrix * RacingGameManager.Player.CarRenderMatrix;
-				renderQueue.AddToRender(car);
+				GameCommon.AddToRender(RacingGameManager.Landscape.Scene);
+
+				_car.GlobalTransform = Constants.objectMatrix * RacingGameManager.Player.CarRenderMatrix;
+				GameCommon.AddToRender(_car);
 
 				_camera.View = BaseGame.ViewMatrix;
-				renderQueue.DoRender(_camera);
+				GameCommon.DoRender(_camera);
 			}
 		}
 

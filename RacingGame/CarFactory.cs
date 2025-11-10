@@ -3,61 +3,33 @@ using Microsoft.Xna.Framework;
 using Nursia;
 using Nursia.Materials;
 using Nursia.SceneGraph;
+using RacingGame.Graphics;
 using System.Linq;
 
-namespace RacingGame.Graphics
+namespace RacingGame
 {
-	public class CarWrapper
+	public static class CarFactory
 	{
-		/// <summary>
-		/// Car colors for the car selection screen.
-		/// </summary>
-		public static Color[] CarColors = new Color[]
-			{
-				Color.White,
-				Color.Yellow,
-				Color.Blue,
-				Color.Purple,
-				Color.Red,
-				Color.Green,
-				Color.Teal,
-				Color.Gray,
-				Color.Chocolate,
-				Color.Orange,
-				Color.SeaGreen,
-			};
-
-		private readonly NursiaModelNode[] _cars;
+		private static readonly string[] _textures = new string[]
+		{
+			"RacerCar", "RacerCar2", "RacerCar3"
+		};
 
 		/// <summary>
 		/// Number of car texture types
 		/// </summary>
 		/// <returns>Int</returns>
-		public int NumberOfCars
-		{
-			get
-			{
-				return _cars.Length;
-			}
-		}
+		public static int NumberOfCars => _textures.Length;
 
-		public CarWrapper()
+		public static NursiaModelNode CreateCar(int number)
 		{
-			_cars = new NursiaModelNode[3];
-
-			_cars[0] = CreateCarNode("RacerCar");
-			_cars[1] = CreateCarNode("RacerCar2");
-			_cars[2] = CreateCarNode("RacerCar3");
-		}
-
-		private NursiaModelNode CreateCarNode(string textureName)
-		{
-			var texture = BaseGame.Content.LoadTexture2D(Nrs.GraphicsDevice, "$Textures/{textureName}.tga");
+			var textureName = _textures[number];
+			var texture = BaseGame.Content.LoadTexture2D(Nrs.GraphicsDevice, $"Textures/{textureName}.tga");
 
 			var result = (NursiaModelNode)BaseGame.Content.LoadSceneNode("Scenes/Car.scene");
 			var wheelsBoneIndices = (from b in result.Model.Bones where b.Mesh != null && b.Mesh.MeshParts.Count == 2 select b.Index).ToArray();
 
-			// Add wheels turning
+			// Add wheels' turning
 			result.PreRender += () =>
 			{
 				var wheelNumber = 0;
@@ -89,7 +61,5 @@ namespace RacingGame.Graphics
 
 			return result;
 		}
-
-		public NursiaModelNode GetCar(int number) => _cars[number];
 	}
 }

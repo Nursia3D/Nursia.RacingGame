@@ -167,8 +167,6 @@ namespace RacingGame.Graphics
 			totalFrameCount = 0,
 			fpsLastSecond = 60;
 
-		public static readonly CarWrapper CarWrapper = new CarWrapper();
-
 		/// <summary>
 		/// Return true every checkMilliseconds.
 		/// </summary>

@@ -3,19 +3,19 @@ using Nursia.Rendering;
 using Nursia.SceneGraph;
 using Nursia.SceneGraph.Cameras;
 
-namespace RacingGame.Graphics
+namespace RacingGame
 {
-	public class RenderQueue
+	public static class GameCommon
 	{
-		private readonly ForwardRenderer _renderer = new ForwardRenderer();
-		private readonly SceneNode _root = new SceneNode();
+		private static readonly ForwardRenderer _renderer = new ForwardRenderer();
+		private static readonly SceneNode _root = new SceneNode();
 
-		public void AddToRender(SceneNode node)
+		public static void AddToRender(SceneNode node)
 		{
 			_root.Children.Add(node);
 		}
 
-		public void DoRender(Camera camera)
+		public static void DoRender(Camera camera)
 		{
 			var vp = Nrs.GraphicsDevice.Viewport;
 

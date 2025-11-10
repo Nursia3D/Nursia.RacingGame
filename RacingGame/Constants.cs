@@ -5,6 +5,24 @@ namespace RacingGame
 	internal static class Constants
 	{
 		/// <summary>
+		/// Car colors for the car selection screen.
+		/// </summary>
+		public static readonly Color[] CarColors = new Color[]
+		{
+			Color.White,
+			Color.Yellow,
+			Color.Blue,
+			Color.Purple,
+			Color.Red,
+			Color.Green,
+			Color.Teal,
+			Color.Gray,
+			Color.Chocolate,
+			Color.Orange,
+			Color.SeaGreen,
+		};
+
+		/// <summary>
 		/// Default object matrix to fix models from 3ds max to our engine!
 		/// </summary>
 		public static readonly Matrix objectMatrix =
@@ -21,15 +39,5 @@ namespace RacingGame
 			DefaultAmbientColor = new Color(40, 40, 40),
 			DefaultDiffuseColor = new Color(210, 210, 210),
 			DefaultSpecularColor = new Color(255, 255, 255);
-
-		/// <summary>
-		/// Default specular power (24)
-		/// </summary>
-		const float DefaultSpecularPower = 24.0f;
-
-		/// <summary>
-		/// Parallax amount for parallax and offset shaders.
-		/// </summary>
-		public const float DefaultParallaxAmount = 0.04f;
 	}
 }

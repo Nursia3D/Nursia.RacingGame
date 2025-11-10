@@ -83,7 +83,7 @@ namespace RacingGame.GameScreens
 
 			// Render car with matrix we got from CarPhysics
 /*			RacingGameManager.CarModel.RenderCar(
-				RacingGameManager.currentCarNumber,
+				Globals.CarNumber,
 				RacingGameManager.CarColor,
 				false,
 				RacingGameManager.Player.CarRenderMatrix);*/
