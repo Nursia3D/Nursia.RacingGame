@@ -92,7 +92,7 @@ namespace RacingGame
 			sky.Load(Assets.Manager);
 
 			_renderEnvironment.Sky = sky;
-			// RenderEnvironment.FogEnabled = true;
+			// _renderEnvironment.FogEnabled = true;
 
 			// Terrain Node
 			_terrain = (TerrainNode)Assets.LoadScene("Landscape");

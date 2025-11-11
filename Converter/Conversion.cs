@@ -69,7 +69,7 @@ namespace Converter
 				IMaterial material;
 				if (!string.IsNullOrEmpty(md.Effect) && md.Effect.Contains("ReflectionSimpleGlass"))
 				{
-					var simpleGlass = new ReflectionSimpleGlass();
+					var simpleGlass = new SimpleGlassMaterial();
 
 					// Set parameters
 					foreach (var pair2 in md.Parameters)
@@ -110,8 +110,8 @@ namespace Converter
 								break;
 
 						}
-
 					}
+
 					material = simpleGlass;
 				}
 				else

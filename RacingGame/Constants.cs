@@ -38,7 +38,7 @@ namespace RacingGame
 		public static readonly Color
 			DefaultAmbientColor = new Color(40, 40, 40),
 			DefaultDiffuseColor = new Color(210, 210, 210),
-			DefaultSpecularColor = new Color(255, 255, 255);
+			DefaultSpecularColor = Color.Black;
 
 		public const float FieldOfViewInDegrees = 90.0f;
 		public const float NearPlane = 0.5f;

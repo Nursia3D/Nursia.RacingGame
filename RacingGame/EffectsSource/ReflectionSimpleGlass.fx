@@ -26,6 +26,8 @@ float fresnelBias = 0.5f;
 float fresnelPower = 1.5f;
 float reflectionAmount = 1.0f;
 
+float4 cEnvColor;
+
 texture EnvCubeMap;
 samplerCUBE EnvCubeMapSampler = sampler_state
 {
@@ -108,7 +110,7 @@ float4 PS_ReflectionSpecular20(VertexOutput20 In) : COLOR
     // Reflection
     half3 R = reflect(-V, N);
     R = float3(R.x, R.z, R.y);
-    half4 reflColor = texCUBE(EnvCubeMapSampler, R);
+    half4 reflColor = cEnvColor * texCUBE(EnvCubeMapSampler, R);
     
     // Fresnel
     float3 E = -V;

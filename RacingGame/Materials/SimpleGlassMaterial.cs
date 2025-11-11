@@ -9,7 +9,7 @@ using System.ComponentModel;
 
 namespace RacingGame.Materials
 {
-	public class ReflectionSimpleGlass : IMaterial
+	public class SimpleGlassMaterial : IMaterial
 	{
 		private static EffectBinding _effectBinding;
 
@@ -49,7 +49,7 @@ namespace RacingGame.Materials
 		public float ReflectionAmount { get; set; } = 1.0f;
 
 
-		public IMaterial Clone() => new ReflectionSimpleGlass()
+		public IMaterial Clone() => new SimpleGlassMaterial()
 		{
 			AmbientColor = AmbientColor,
 			DiffuseColor = DiffuseColor,
@@ -67,14 +67,14 @@ namespace RacingGame.Materials
 			{
 				var binding = new EffectBinding(Assets.LoadEffect("ReflectionSimpleGlass"));
 
-				binding.AddMaterialLevelSetter<ReflectionSimpleGlass>("ambientColor", (m, p) => p.SetValue(m.AmbientColor.ToVector4()));
-				binding.AddMaterialLevelSetter<ReflectionSimpleGlass>("diffuseColor", (m, p) => p.SetValue(m.DiffuseColor.ToVector4()));
-				binding.AddMaterialLevelSetter<ReflectionSimpleGlass>("specularColor", (m, p) => p.SetValue(m.SpecularColor.ToVector4()));
-				binding.AddMaterialLevelSetter<ReflectionSimpleGlass>("shininess", (m, p) => p.SetValue(m.Shininess));
-				binding.AddMaterialLevelSetter<ReflectionSimpleGlass>("alphaFactor", (m, p) => p.SetValue(m.AlphaFactor));
-				binding.AddMaterialLevelSetter<ReflectionSimpleGlass>("fresnelBias", (m, p) => p.SetValue(m.FresnelBias));
-				binding.AddMaterialLevelSetter<ReflectionSimpleGlass>("fresnelPower", (m, p) => p.SetValue(m.FresnelPower));
-				binding.AddMaterialLevelSetter<ReflectionSimpleGlass>("reflectionAmount", (m, p) => p.SetValue(m.ReflectionAmount));
+				binding.AddMaterialLevelSetter<SimpleGlassMaterial>("ambientColor", (m, p) => p.SetValue(m.AmbientColor.ToVector4()));
+				binding.AddMaterialLevelSetter<SimpleGlassMaterial>("diffuseColor", (m, p) => p.SetValue(m.DiffuseColor.ToVector4()));
+				binding.AddMaterialLevelSetter<SimpleGlassMaterial>("specularColor", (m, p) => p.SetValue(m.SpecularColor.ToVector4()));
+				binding.AddMaterialLevelSetter<SimpleGlassMaterial>("shininess", (m, p) => p.SetValue(m.Shininess));
+				binding.AddMaterialLevelSetter<SimpleGlassMaterial>("alphaFactor", (m, p) => p.SetValue(m.AlphaFactor));
+				binding.AddMaterialLevelSetter<SimpleGlassMaterial>("fresnelBias", (m, p) => p.SetValue(m.FresnelBias));
+				binding.AddMaterialLevelSetter<SimpleGlassMaterial>("fresnelPower", (m, p) => p.SetValue(m.FresnelPower));
+				binding.AddMaterialLevelSetter<SimpleGlassMaterial>("reflectionAmount", (m, p) => p.SetValue(m.ReflectionAmount));
 
 				_effectBinding = binding;
 			}

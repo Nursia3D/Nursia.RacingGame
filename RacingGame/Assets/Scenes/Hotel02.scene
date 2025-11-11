@@ -9,7 +9,7 @@
     "Materials": [
       [
         {
-          "$type": "RacingGame.Materials.ReflectionSimpleGlass, RacingGame",
+          "$type": "RacingGame.Materials.SimpleGlassMaterial, RacingGame",
           "AmbientColor": "#262626FF",
           "DiffuseColor": "#5DA1E6FF",
           "SpecularColor": "#BCE2E4FF",
