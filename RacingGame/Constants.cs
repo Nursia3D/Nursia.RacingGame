@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
 
 namespace RacingGame
 {
@@ -44,6 +43,13 @@ namespace RacingGame
 		public const float FieldOfViewInDegrees = 90.0f;
 		public const float NearPlane = 0.5f;
 		public const float FarPlane = 1750.0f;
-		public const float DefaultMaxShadowDistance = 500.0f;
+		public const float DefaultMaxShadowDistance = 100.0f;
+
+		/// <summary>
+		/// Put light at a little different location because we want
+		/// to see the sun, but still have the light come more from the top.
+		/// </summary>
+		public static readonly Vector3 DefaultLightPos = new Vector3(+8500, -7250, +15000);
+
 	}
 }

@@ -293,7 +293,7 @@ namespace RacingGame.Tracks
 					if (landscape != null &&
 						// Completely ignore all guard rails for low detail
 						// to save performance (few thousand objects per track less)
-						BaseGame.HighDetail)
+						Options.HighDetail)
 						landscape.AddObjectToRender(
 							"GuardRailHolder",
 							// Fix scaling a little

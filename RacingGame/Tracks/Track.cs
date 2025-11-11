@@ -198,7 +198,7 @@ namespace RacingGame.Tracks
 		public Track(string setTrackName, Landscape landscape)
 			: base(TrackData.Load(setTrackName), landscape)
 		{
-			_scene = RG.Resources.LoadScene(setTrackName);
+			_scene = Assets.LoadScene(setTrackName);
 
 			GenerateVerticesAndObjects(landscape);
 		}
@@ -294,13 +294,6 @@ namespace RacingGame.Tracks
 			}
 
 			// Set road back index buffer
-			// fix
-			//roadIb = new IndexBuffer(
-			//    Nrs.GraphicsDevice,
-			//    typeof(int),
-			//    indices.Length,
-			//    ResourceUsage.WriteOnly,
-			//    ResourceManagementMode.Automatic);
 			var roadIb = new IndexBuffer(
 				Nrs.GraphicsDevice,
 				typeof(int),
@@ -317,7 +310,7 @@ namespace RacingGame.Tracks
 				NormalTexturePath = "Textures/RoadNormal.tga",
 			};
 
-			material.Load(RG.Assets);
+			material.Load(Assets.Manager);
 
 			var meshPart = new DrMeshPart(roadVb, roadIb, roadVertices.CalculateBoundingBox());
 
@@ -436,7 +429,7 @@ namespace RacingGame.Tracks
 				NormalTexturePath = "Textures/RoadBackNormal.tga",
 			};
 
-			material.Load(RG.Assets);
+			material.Load(Assets.Manager);
 
 			var meshPart = new DrMeshPart(roadBackVb, roadBackIb, roadBackVertices.CalculateBoundingBox());
 
@@ -588,7 +581,7 @@ namespace RacingGame.Tracks
 				RasterizerState = RasterizerState.CullNone
 			};
 
-			material.Load(RG.Assets);
+			material.Load(Assets.Manager);
 
 			var meshPart = new DrMeshPart(roadTunnelVb, roadTunnelIb, roadTunnelVertices.CalculateBoundingBox());
 
@@ -1011,7 +1004,7 @@ namespace RacingGame.Tracks
 
 				// Show twice as many objects in high details mode
 				int randomMaxPropability;
-				if (BaseGame.HighDetail)
+				if (Options.HighDetail)
 					randomMaxPropability = 5;
 				else
 					randomMaxPropability = 10;
@@ -1268,7 +1261,7 @@ namespace RacingGame.Tracks
 			trackSegmentNumber = num;
 			// Btw: Is this a tunnel? Then disable lens flares!
 			// Check every 10 frames to save a little performance.
-			if (BaseGame.TotalFrames % 10 == 0)
+			if (GameClass.TotalFrames % 10 == 0)
 				disableLensFlareInTunnel = IsTunnel(num);
 
 			// Also calculate our track segment position

@@ -249,7 +249,7 @@ namespace RacingGame.Tracks
 				// to render later.
 				if (landscape != null &&
 					// This is not really required, we can easily optimize this out.
-					BaseGame.HighDetail)
+					Options.HighDetail)
 					landscape.AddObjectToRender(
 						"RoadColumnSegment",
 						new Vector3(bottomPos.X, bottomPos.Y,

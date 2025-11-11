@@ -9,16 +9,8 @@
 
 #region Using directives
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Nursia;
-using Nursia.Materials;
 using Nursia.SceneGraph;
-using Nursia.SceneGraph.Landscape;
-using Nursia.SceneGraph.Lights;
 using RacingGame.GameLogic;
-using RacingGame.GameScreens;
-using RacingGame.Graphics;
-using RacingGame.Sounds;
 using RacingGame.Tracks;
 using RacingGame.Utilities;
 using System;
@@ -29,6 +21,16 @@ using System.Threading;
 
 namespace RacingGame.Landscapes
 {
+	/// <summary>
+	/// Level we use for our track and landscape
+	/// </summary>
+	public enum RacingGameLevel
+	{
+		Beginner,
+		Advanced,
+		Expert,
+	}
+
 	/// <summary>
 	/// Landscape
 	/// </summary>
@@ -105,12 +107,7 @@ namespace RacingGame.Landscapes
 
 			if (startLightObject != null)
 			{
-				if (number == 2)
-					Sound.Play(Sound.Sounds.Bleep);
-				else
-					Sound.Play(Sound.Sounds.Beep);
-
-				var model = RG.Resources.LoadModel(starLightsModels[number]);
+				var model = Assets.LoadModel(starLightsModels[number]);
 				startLightObject.ChangeModel(starLightsModels[number], model);
 			}
 		}
@@ -184,7 +181,7 @@ namespace RacingGame.Landscapes
 
 		public static float GetMapHeight(float x, float y)
 		{
-			return RG.Resources.Terrain.GetHeight(new Vector3(x, y, 0));
+			return GameClass.Terrain.GetHeight(new Vector3(x, y, 0));
 		}
 
 		/// <summary>
@@ -221,7 +218,7 @@ namespace RacingGame.Landscapes
 				renderMatrix.Translation = modelPos;
 			}
 
-			var model = RG.Resources.LoadModel(modelName);
+			var model = Assets.LoadModel(modelName);
 			var size = model.Model.CalculateSize();
 
 			// Check if another object is nearby, then skip this one!
@@ -280,7 +277,7 @@ namespace RacingGame.Landscapes
 
 			if (!isCombi)
 			{
-				var model = RG.Resources.LoadModel(modelName);
+				var model = Assets.LoadModel(modelName);
 				objSize = model.Model.CalculateSize();
 			}
 
@@ -312,13 +309,12 @@ namespace RacingGame.Landscapes
 		#region Variables
 
 
-		private readonly RenderCallbackNode _brakesNode;
 		private readonly SceneNode _scene = new SceneNode();
 
 		/// <summary>
 		/// Currently loaded level
 		/// </summary>
-		RacingGameManager.Level level = RacingGameManager.Level.Beginner;
+		RacingGameLevel level = RacingGameLevel.Beginner;
 
 		/// <summary>
 		/// Track for our landscape, can be TrackBeginner, TrackAdvanced and
@@ -340,7 +336,7 @@ namespace RacingGame.Landscapes
 			{
 				if (_scene.Children.Count == 0)
 				{
-					_scene.Children.Add(RG.Resources.Terrain);
+					_scene.Children.Add(GameClass.Terrain);
 
 					_scene.Children.Add(track.Scene);
 
@@ -361,106 +357,12 @@ namespace RacingGame.Landscapes
 					{
 						_scene.Children.Add(landscapeObject.Model);
 					}
-
-					// Render all brake tracks
-					_scene.Children.Add(_brakesNode);
 				}
 
 				return _scene;
 			}
 		}
 
-
-		/// <summary>
-		/// Compare checkpoint time to the bestReplay times.
-		/// </summary>
-		/// <param name="checkpointNum">Checkpoint num</param>
-		/// <returns>Time in milliseconds we improved</returns>
-		public int CompareCheckpointTime(int checkpointNum)
-		{
-			// Invalid data?
-			if (bestReplay == null ||
-				checkpointNum >= bestReplay.CheckpointTimes.Count)
-				// Then we can't return anything
-				return 0;
-
-			// Else just return difference
-			float differenceMs =
-				RacingGameManager.Player.GameTimeMilliseconds -
-				bestReplay.CheckpointTimes[checkpointNum] * 1000.0f;
-
-			return (int)differenceMs;
-		}
-
-		/// <summary>
-		/// Start new lap, checks if the newReplay is good and
-		/// can be stored as best replay :)
-		/// </summary>
-		public void StartNewLap()
-		{
-			float thisLapTime =
-				RacingGameManager.Player.GameTimeMilliseconds / 1000.0f;
-
-			// Upload new highscore (as we currently are in game,
-			// no bonus or anything will be added, this score is low!)
-			Highscores.SubmitHighscore((int)level,
-				(int)RacingGameManager.Player.GameTimeMilliseconds);
-
-			RacingGameManager.Player.AddLapTime(thisLapTime);
-
-			if (thisLapTime < bestReplay.LapTime)
-			{
-				// Add final checkpoint
-				RacingGameManager.Landscape.NewReplay.CheckpointTimes.Add(
-					thisLapTime);
-
-				// Record lap time
-				newReplay.LapTime = thisLapTime;
-
-				// Save this replay to load it everytime in the future
-				// Do this on a worker thread to prevent the game from skipping frames
-				ThreadPool.QueueUserWorkItem(new WaitCallback(SaveReplay),
-											(Replay)newReplay.Clone());
-
-				// Set it as the current best replay
-				bestReplay = newReplay;
-			}
-
-			// And start a new replay for this round
-			newReplay = new Replay((int)level, true, track);
-		}
-
-		/// <summary>
-		/// Callback used for saving a replay from a worker thread
-		/// </summary>
-		/// <param name="replay">Replay to be saved</param>
-		private void SaveReplay(object replay)
-		{
-#if FNA
-			((Replay)replay).Save();
-#endif
-		}
-
-		/// <summary>
-		/// New replay
-		/// </summary>
-		public Replay NewReplay
-		{
-			get
-			{
-				return newReplay;
-			}
-		}
-
-		/// <summary>
-		/// Remember a list of brack tracks, which will be generated if we brake.
-		/// </summary>
-		List<TangentVertex> brakeTracksVertices = new List<TangentVertex>();
-
-		/// <summary>
-		/// Little helper to avoid creating a new array each frame for rendering
-		/// </summary>
-		TangentVertex[] brakeTracksVerticesArray = null;
 		#endregion
 
 		#region Properties
@@ -518,30 +420,13 @@ namespace RacingGame.Landscapes
 		/// from the RacingGame main class!
 		/// </summary>
 		/// <param name="setLevel">Level we want to load</param>
-		public Landscape(RacingGameManager.Level setLevel)
+		public Landscape(RacingGameLevel setLevel)
 		{
 			#region Load track (and replay inside ReloadLevel method)
 			// Load track based on the level selection and set car pos with
 			// help of the ReloadLevel method.
 			ReloadLevel(setLevel);
 			#endregion
-
-			var material = new LitSolidMaterial
-			{
-				DiffuseColor = Constants.DefaultDiffuseColor,
-				SpecularColor = Constants.DefaultSpecularColor,
-				AmbientColor = Constants.DefaultAmbientColor,
-				DiffuseTexturePath = "Textures/track.tga",
-				CastsShadows = false
-			};
-
-			material.Load(RG.Assets);
-
-			_brakesNode = new RenderCallbackNode
-			{
-				Material = material,
-				RenderCallback = RenderBrakeTracks
-			};
 		}
 
 		#region Reload level
@@ -549,7 +434,7 @@ namespace RacingGame.Landscapes
 		/// Reload level
 		/// </summary>
 		/// <param name="setLevel">Level</param>
-		internal void ReloadLevel(RacingGameManager.Level setLevel)
+		internal void ReloadLevel(RacingGameLevel setLevel)
 		{
 			level = setLevel;
 
@@ -564,12 +449,8 @@ namespace RacingGame.Landscapes
 			bestReplay = new Replay((int)level, false, track);
 			newReplay = new Replay((int)level, true, track);
 
-			// Kill brake tracks
-			brakeTracksVertices.Clear();
-			brakeTracksVerticesArray = null;
-
 			// Begin game with red start light
-			startLightObject.ChangeModel(starLightsModels[0], RG.Resources.LoadModel(starLightsModels[0]));
+			startLightObject.ChangeModel(starLightsModels[0], Assets.LoadModel(starLightsModels[0]));
 		}
 		#endregion
 
@@ -604,8 +485,7 @@ namespace RacingGame.Landscapes
 		/// </summary>
 		public void SetCarToStartPosition(Player player)
 		{
-			player.SetCarPosition(
-				track.StartPosition, track.StartDirection, track.StartUpVector);
+			player.SetCarPosition(track.StartPosition, track.StartDirection, track.StartUpVector);
 			// Camera is set in zooming in method of the Player class.
 		}
 		#endregion
@@ -654,102 +534,6 @@ namespace RacingGame.Landscapes
 		{
 			track.UpdateCarTrackPosition(carPos,
 				ref trackSegmentNumber, ref trackPositionPercent);
-		}
-		#endregion
-
-		#region Add and render brake tracks
-		/// <summary>
-		/// Helper to skip track generation if it is near the last generated pos.
-		/// </summary>
-		Vector3 lastAddedTrackPos = new Vector3(-1000, -1000, -1000);
-		/// <summary>
-		/// Render a maximum of 140 brake tracks.
-		/// </summary>
-		const int MaxBrakeTrackVertices = 6 * 140;
-
-		/// <summary>
-		/// The amount to raise the break tracks decal off the road surface
-		/// </summary>
-		const float RaiseBreakTracksAmount = 0.2f;
-
-		/// <summary>
-		/// Add brake track
-		/// </summary>
-		/// <param name="position">Position</param>
-		/// <param name="dir">Dir vector</param>
-		/// <param name="right">Right vector</param>
-		public void AddBrakeTrack(Player car)
-		{
-			Vector3 position = car.CarPosition + car.CarDirection * 1.25f;
-
-			// Just skip if we setting to a similar location again.
-			// This check is much faster and accurate for tracks on top of each
-			// other than the foreach loop below, which is only useful to
-			// put multiple tracks correctly behind each other!
-			if (Vector3.DistanceSquared(position, lastAddedTrackPos) < 0.024f ||
-				// Limit number of tracks to keep rendering fast.
-				brakeTracksVertices.Count > MaxBrakeTrackVertices)
-				return;
-
-			lastAddedTrackPos = position;
-
-			const float width = 2.4f; // car is 2.6m width, we use 2.4m for tires
-			const float length = 4.5f; // Length of break tracks
-			float maxDist =
-				(float)Math.Sqrt(width * width + length * length) / 2 - 0.35f;
-
-			// Check if there is any track already set here or nearby?
-			for (int num = 0; num < brakeTracksVertices.Count; num++)
-				if (Vector3.DistanceSquared(brakeTracksVertices[num].pos, position) <
-					maxDist * maxDist)
-					// Then skip this brake track, don't put that much stuff on
-					// top of each other.
-					return;
-
-			// Move position a little bit up (above the road)
-			position += Vector3.Normalize(car.CarUpVector) * RaiseBreakTracksAmount;
-
-			// Just add 6 new vertices to render (2 triangles)
-			TangentVertex[] newVertices = new TangentVertex[]
-			{
-                // First triangle
-                new TangentVertex(
-					position -car.CarRight*width/2 -car.CarDirection*length/2, 0, 0,
-					car.CarUpVector, car.CarRight),
-				new TangentVertex(
-					position -car.CarRight*width/2 +car.CarDirection*length/2, 0, 5,
-					car.CarUpVector, car.CarRight),
-				new TangentVertex(
-					position +car.CarRight*width/2 +car.CarDirection*length/2, 1, 5,
-					car.CarUpVector, car.CarRight),
-                // Second triangle
-                new TangentVertex(
-					position -car.CarRight*width/2 -car.CarDirection*length/2, 0, 0,
-					car.CarUpVector, car.CarRight),
-				new TangentVertex(
-					position +car.CarRight*width/2 +car.CarDirection*length/2, 1, 5,
-					car.CarUpVector, car.CarRight),
-				new TangentVertex(
-					position +car.CarRight*width/2 -car.CarDirection*length/2, 1, 0,
-					car.CarUpVector, car.CarRight),
-			};
-
-			brakeTracksVertices.AddRange(newVertices);
-			brakeTracksVerticesArray = brakeTracksVertices.ToArray();
-		}
-
-		/// <summary>
-		/// Render brake tracks
-		/// </summary>
-		public void RenderBrakeTracks()
-		{
-			// Nothing to render?
-			if (brakeTracksVerticesArray == null)
-				return;
-
-			// Draw the vertices
-			Nrs.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList,
-				brakeTracksVerticesArray, 0, brakeTracksVerticesArray.Length / 3);
 		}
 		#endregion
 	}
