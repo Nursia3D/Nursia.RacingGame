@@ -1,10 +1,10 @@
 {
   "Camera": {
-    "$type": "Nursia.SceneGraph.Cameras.PerspectiveCamera, Nursia",
+    "$type": "Nursia.SceneGraph.Camera, Nursia",
     "ViewAngle": 90.0,
     "AspectRatio": 1.1703932,
-    "NearPlaneDistance": 0.1,
-    "FarPlaneDistance": 1000.0,
+    "NearPlane": 0.1,
+    "FarPlane": 1000.0,
     "Translation": "610.7826, 270.49393, -815.6527",
     "Scale": "1, 1, 1",
     "Rotation": "338.16226, 185.35194, 0",

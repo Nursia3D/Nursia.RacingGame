@@ -8,9 +8,9 @@ using Nursia.Env;
 using Nursia.Env.Sky;
 using Nursia.Rendering;
 using Nursia.SceneGraph;
-using Nursia.SceneGraph.Cameras;
 using Nursia.SceneGraph.Landscape;
 using Nursia.SceneGraph.Lights;
+using Nursia.Utilities;
 using RacingDemo.GameLogic;
 using RacingDemo.Landscapes;
 using RacingDemo.UI;
@@ -30,7 +30,8 @@ namespace RacingDemo
 		private DirectLight _directLight;
 		private Landscape _landscape;
 		private NursiaModelNode _car;
-		private PerspectiveCamera _camera;
+		private Camera _camera;
+		private Camera _pauseCamera;
 		private Player _player;
 		private Replay _bestReplay;
 		private float _carMenuTime;
@@ -41,6 +42,8 @@ namespace RacingDemo
 		private Desktop _desktop;
 		private ToggleButton _optionsButton;
 		private OptionsWindow _optionsWindow;
+		private bool _isPaused;
+		private CameraInputController _cameraController;
 
 		public static TerrainNode Terrain => _instance._terrain;
 		public static Player Player => _instance._player;
@@ -63,11 +66,13 @@ namespace RacingDemo
 			{
 				PreferredBackBufferWidth = 1600,
 				PreferredBackBufferHeight = 900,
-				GraphicsProfile = GraphicsProfile.HiDef
+				GraphicsProfile = GraphicsProfile.HiDef,
+				SynchronizeWithVerticalRetrace = false
 			};
 
 			Window.AllowUserResizing = true;
 			IsMouseVisible = true;
+			IsFixedTimeStep = false;
 		}
 
 		protected override void LoadContent()
@@ -115,11 +120,11 @@ namespace RacingDemo
 			_landscape = new Landscape(RacingDemoLevel.Beginner);
 
 			// Camera
-			_camera = new PerspectiveCamera
+			_camera = new Camera
 			{
 				ViewAngle = Constants.FieldOfViewInDegrees,
-				NearPlaneDistance = Constants.NearPlane,
-				FarPlaneDistance = Constants.FarPlane
+				NearPlane = Constants.NearPlane,
+				FarPlane = Constants.FarPlane
 			};
 
 			_bestReplay = _landscape.BestReplay;
@@ -135,7 +140,7 @@ namespace RacingDemo
 			_root.Children.Add(_landscape.Scene);
 			_root.Children.Add(_car);
 
-			Nrs.GraphicsSettings.ShadowCascadeSize = ShadowCascadeSize.Size2048;
+			Nrs.GraphicsSettings.ShadowMapSize = ShadowMapSize.Size2048;
 			Nrs.GraphicsSettings.ShadowType = ShadowType.Simple;
 
 			// Myra
@@ -171,7 +176,8 @@ namespace RacingDemo
 				_optionsWindow = new OptionsWindow();
 				_optionsWindow.Closed += (s, a) => _optionsButton.IsToggled = false;
 				_optionsWindow.Show(_desktop);
-			} else if (_optionsWindow != null)
+			}
+			else if (_optionsWindow != null)
 			{
 				_optionsWindow.Close();
 				_optionsWindow = null;
@@ -186,47 +192,69 @@ namespace RacingDemo
 
 			++_frameCount;
 
-			// Advance menu car preview time
-			_carMenuTime += (float)gameTime.ElapsedGameTime.TotalMilliseconds / 1000.0f;
-			if (_carMenuTime > _landscape.BestReplay.LapTime)
-				_carMenuTime -= _landscape.BestReplay.LapTime;
-
-			// Use data from replay
-			Matrix carMatrix = _bestReplay.GetCarMatrixAtTime(_carMenuTime);
-
-			// Interpolate carPos a little
-			var carPos = carMatrix.Translation;
-
-			// Set carPos for camera (else the car will drive away from us ^^)
-			_player.SetCarPosition(carPos, carMatrix.Forward, carMatrix.Up);
-
-			// Put camera behind car, but make it move smoothly
-			Vector3 newCarForward = carMatrix.Forward;
-			Vector3 newCarUp = carMatrix.Up;
-			if (_oldCarForward == Vector3.Zero)
+			if (!_isPaused)
 			{
-				_oldCarForward = newCarForward;
+				// Advance menu car preview time
+				_carMenuTime += (float)gameTime.ElapsedGameTime.TotalMilliseconds / 1000.0f;
+				if (_carMenuTime > _landscape.BestReplay.LapTime)
+					_carMenuTime -= _landscape.BestReplay.LapTime;
+
+				// Use data from replay
+				Matrix carMatrix = _bestReplay.GetCarMatrixAtTime(_carMenuTime);
+
+				// Interpolate carPos a little
+				var carPos = carMatrix.Translation;
+
+				// Set carPos for camera (else the car will drive away from us ^^)
+				_player.SetCarPosition(carPos, carMatrix.Forward, carMatrix.Up);
+
+				// Put camera behind car, but make it move smoothly
+				Vector3 newCarForward = carMatrix.Forward;
+				Vector3 newCarUp = carMatrix.Up;
+				if (_oldCarForward == Vector3.Zero)
+				{
+					_oldCarForward = newCarForward;
+				}
+				if (_oldCarUp == Vector3.Zero)
+				{
+					_oldCarUp = newCarUp;
+				}
+
+				_oldCarForward = _oldCarForward * 0.95f + newCarForward * 0.05f;
+				_oldCarUp = _oldCarUp * 0.95f + newCarUp * 0.05f;
+
+				// Mix camera positions, interpolate slowly, much smoother camera!
+				_player.SetCameraPosition(carPos + _oldCarForward * 13 - _oldCarUp * 1.3f);
+				_player.Update();
+
+				_camera.View = _player.ViewMatrix;
+				_car.LocalTransform = Constants.objectMatrix * _player.CarRenderMatrix;
 			}
-			if (_oldCarUp == Vector3.Zero)
+			else
 			{
-				_oldCarUp = newCarUp;
+				_cameraController.Update();
 			}
-
-			_oldCarForward = _oldCarForward * 0.95f + newCarForward * 0.05f;
-			_oldCarUp = _oldCarUp * 0.95f + newCarUp * 0.05f;
-
-			// Mix camera positions, interpolate slowly, much smoother camera!
-			_player.SetCameraPosition(carPos + _oldCarForward * 13 - _oldCarUp * 1.3f);
-			_player.Update();
-
-			_camera.View = _player.ViewMatrix;
-			_car.LocalTransform = Constants.objectMatrix * _player.CarRenderMatrix;
 
 			KeyboardUtils.Begin();
 
 			if (KeyboardUtils.IsPressed(Keys.O))
 			{
 				_optionsButton.DoClick();
+			}
+
+			if (KeyboardUtils.IsPressed(Keys.Space))
+			{
+				if (!_isPaused)
+				{
+					_isPaused = true;
+					_pauseCamera = (Camera)_camera.Clone();
+					_pauseCamera.View = _camera.View;
+					_cameraController = new CameraInputController(_pauseCamera);
+				}
+				else
+				{
+					_isPaused = false;
+				}
 			}
 
 			KeyboardUtils.End();
@@ -242,8 +270,9 @@ namespace RacingDemo
 
 			var vp = Nrs.GraphicsDevice.Viewport;
 
-			_camera.SetViewport(vp.Width, vp.Height);
-			_renderer.Render(_root, _camera, _renderEnvironment);
+			var camera = _isPaused ? _pauseCamera : _camera;
+			camera.SetViewport(vp);
+			_renderer.Render(_root, camera, _renderEnvironment);
 
 			_spriteBatch.Begin();
 
